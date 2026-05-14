@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Practice Test | Digital Literacy CCSLC</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Georgia:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <style>
   :root {
     --ink:#0d1117;--ink2:#1e2633;--teal:#00c2a8;--teal2:#00968a;
@@ -18,7 +18,7 @@
   body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--text);min-height:100vh;}
 
   nav{background:var(--ink);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:100;}
-  .nav-brand{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:var(--teal);text-decoration:none;}
+  .nav-brand{font-family:'Georgia',sans-serif;font-weight:800;font-size:1.1rem;color:var(--teal);text-decoration:none;}
   .nav-brand span{color:#fff;}
   .nav-links{display:flex;gap:4px;}
   .nav-links a{color:rgba(255,255,255,0.7);text-decoration:none;font-size:0.875rem;font-weight:500;padding:8px 14px;border-radius:8px;transition:all 0.2s;}
@@ -27,16 +27,16 @@
   .hamburger span{display:block;width:22px;height:2px;background:#fff;border-radius:2px;}
 
   .page-header{background:linear-gradient(135deg,var(--ink) 0%,var(--ink2) 100%);padding:48px 24px 56px;color:#fff;text-align:center;}
-  .page-header h1{font-family:'Syne',sans-serif;font-size:clamp(1.6rem,4vw,2.6rem);font-weight:800;letter-spacing:-0.5px;margin-bottom:10px;}
+  .page-header h1{font-family:'Georgia',sans-serif;font-size:clamp(1.6rem,4vw,2.6rem);font-weight:800;letter-spacing:-0.5px;margin-bottom:10px;}
   .page-header p{color:rgba(255,255,255,0.6);font-size:0.95rem;}
 
   /* PROGRESS BAR */
   .test-progress-wrap{background:var(--card);border-bottom:1px solid var(--border);padding:16px 24px;position:sticky;top:64px;z-index:50;}
   .test-progress-inner{max-width:860px;margin:0 auto;display:flex;align-items:center;gap:16px;}
-  .progress-text{font-family:'Syne',sans-serif;font-weight:700;font-size:0.85rem;color:var(--ink);white-space:nowrap;}
+  .progress-text{font-family:'Georgia',sans-serif;font-weight:700;font-size:0.85rem;color:var(--ink);white-space:nowrap;}
   .progress-track{flex:1;background:var(--border);border-radius:999px;height:8px;}
   .progress-fill{height:100%;border-radius:999px;background:var(--teal);transition:width 0.4s ease;}
-  .score-badge{font-family:'Syne',sans-serif;font-weight:700;font-size:0.85rem;padding:6px 14px;border-radius:999px;background:var(--surface);border:1px solid var(--border);white-space:nowrap;}
+  .score-badge{font-family:'Georgia',sans-serif;font-weight:700;font-size:0.85rem;padding:6px 14px;border-radius:999px;background:var(--surface);border:1px solid var(--border);white-space:nowrap;}
 
   .container{max-width:860px;margin:0 auto;padding:24px 24px 80px;}
 
@@ -46,7 +46,7 @@
     padding:32px;margin-bottom:32px;display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;
   }
   .intro-icon{font-size:3rem;flex-shrink:0;}
-  .intro-title{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;color:var(--ink);margin-bottom:8px;}
+  .intro-title{font-family:'Georgia',sans-serif;font-size:1.3rem;font-weight:800;color:var(--ink);margin-bottom:8px;}
   .intro-meta{display:flex;gap:16px;flex-wrap:wrap;margin-top:12px;}
   .meta-pill{
     font-size:0.78rem;font-weight:600;padding:5px 14px;border-radius:999px;
@@ -58,7 +58,7 @@
     display:flex;align-items:center;gap:14px;margin:32px 0 20px;
   }
   .section-label-pill{
-    font-family:'Syne',sans-serif;font-size:0.7rem;font-weight:700;
+    font-family:'Georgia',sans-serif;font-size:0.7rem;font-weight:700;
     letter-spacing:1.5px;text-transform:uppercase;padding:5px 14px;
     border-radius:999px;white-space:nowrap;
   }
@@ -78,7 +78,7 @@
   }
   .q-number{
     width:32px;height:32px;border-radius:8px;background:var(--ink);color:#fff;
-    font-family:'Syne',sans-serif;font-weight:800;font-size:0.8rem;
+    font-family:'Georgia',sans-serif;font-weight:800;font-size:0.8rem;
     display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;
   }
   .q-text{font-size:0.95rem;font-weight:500;line-height:1.6;color:var(--ink);}
@@ -105,7 +105,7 @@
   .option-letter{
     width:26px;height:26px;border-radius:6px;border:1.5px solid currentColor;
     display:flex;align-items:center;justify-content:center;
-    font-family:'Syne',sans-serif;font-weight:700;font-size:0.7rem;
+    font-family:'Georgia',sans-serif;font-weight:700;font-size:0.7rem;
     flex-shrink:0;opacity:0.6;
   }
   .option-btn.correct .option-letter,.option-btn.reveal-correct .option-letter{opacity:1;background:rgba(16,185,129,0.2);}
@@ -128,15 +128,15 @@
   }
   #resultPanel.show{display:block;}
   .result-emoji{font-size:4rem;margin-bottom:16px;}
-  .result-grade{font-family:'Syne',sans-serif;font-size:3rem;font-weight:800;margin-bottom:8px;}
+  .result-grade{font-family:'Georgia',sans-serif;font-size:3rem;font-weight:800;margin-bottom:8px;}
   .result-label{font-size:1.1rem;color:var(--muted);margin-bottom:24px;}
   .result-stats{display:flex;gap:0;justify-content:center;flex-wrap:wrap;margin-bottom:32px;border:1px solid var(--border);border-radius:12px;overflow:hidden;}
   .result-stat{flex:1;min-width:100px;padding:20px 16px;border-right:1px solid var(--border);text-align:center;}
   .result-stat:last-child{border-right:none;}
-  .stat-n{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;}
+  .stat-n{font-family:'Georgia',sans-serif;font-size:1.8rem;font-weight:800;}
   .stat-l{font-size:0.78rem;color:var(--muted);}
   .result-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
-  .btn{padding:12px 28px;border-radius:999px;border:none;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;font-size:0.875rem;transition:all 0.2s;}
+  .btn{padding:12px 28px;border-radius:999px;border:none;cursor:pointer;font-family:'Georgia',sans-serif;font-weight:700;font-size:0.875rem;transition:all 0.2s;}
   .btn-primary{background:var(--teal);color:var(--ink);}
   .btn-primary:hover{background:var(--teal2);transform:translateY(-1px);}
   .btn-outline{background:var(--card);border:1.5px solid var(--border);color:var(--ink);}
@@ -146,7 +146,7 @@
   .submit-row{text-align:center;margin-top:32px;}
   .submit-btn{
     padding:16px 48px;border-radius:999px;border:none;cursor:pointer;
-    font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;
+    font-family:'Georgia',sans-serif;font-weight:800;font-size:1rem;
     background:var(--ink);color:#fff;transition:all 0.25s;
     box-shadow:0 4px 20px rgba(0,0,0,0.15);
   }
@@ -173,6 +173,7 @@
     <a href="study-guide.html">Study Guide</a>
     <a href="flashcards.html">Flashcards</a>
     <a href="search.html">Search</a>
+	<a href="game.html">Match It Game!</a>
     <a href="practice-test.html" class="active">Practice Test</a>
   </div>
   <div class="hamburger" onclick="toggleNav()"><span></span><span></span><span></span></div>

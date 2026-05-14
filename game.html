@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Match It! | Digital Literacy CCSLC</title>
+<link href="https://fonts.googleapis.com/css2?family=Georgia:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:#0d1117; --ink2:#1e2633; --teal:#00c2a8; --teal2:#00968a;
+  --amber:#f5a623; --lavender:#7b6fff; --coral:#ff6b6b; --green:#34d399; --pink:#f472b6;
+  --surface:#f7f9fc; --card:#fff; --border:#e2e8f0; --text:#374151; --muted:#6b7280;
+  --radius:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+/* NAV */
+nav{background:var(--ink);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:200;}
+.nav-brand{font-family:'Georgia',sans-serif;font-weight:800;font-size:1.1rem;color:var(--teal);text-decoration:none;}
+.nav-brand span{color:#fff;}
+.nav-links{display:flex;gap:4px;}
+.nav-links a{color:rgba(255,255,255,0.7);text-decoration:none;font-size:0.875rem;font-weight:500;padding:8px 14px;border-radius:8px;transition:all 0.2s;}
+.nav-links a:hover,.nav-links a.active{background:rgba(0,194,168,0.15);color:var(--teal);}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;}
+.hamburger span{display:block;width:22px;height:2px;background:#fff;border-radius:2px;}
+
+/* ── LEVEL SELECT SCREEN ── */
+#levelSelect{display:block;}
+.hero-game{
+  background:linear-gradient(135deg,var(--ink) 0%,#14213d 60%,#1a1035 100%);
+  padding:56px 24px 48px; text-align:center; color:#fff; position:relative; overflow:hidden;
+}
+.hero-game::before{
+  content:''; position:absolute; top:-120px; right:-120px;
+  width:500px;height:500px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,194,168,.18) 0%,transparent 70%);
+}
+.hero-game::after{
+  content:''; position:absolute; bottom:-100px; left:-80px;
+  width:400px;height:400px;border-radius:50%;
+  background:radial-gradient(circle,rgba(123,111,255,.15) 0%,transparent 70%);
+}
+.hero-game h1{font-family:'Georgia',sans-serif;font-weight:800;font-size:clamp(2rem,5vw,3rem);letter-spacing:-1px;margin-bottom:10px;position:relative;}
+.hero-game h1 .accent{color:var(--teal);}
+.hero-game p{color:rgba(255,255,255,.65);font-size:1rem;max-width:500px;margin:0 auto 8px;position:relative;}
+.game-badge{display:inline-block;background:rgba(0,194,168,.2);border:1px solid rgba(0,194,168,.4);color:var(--teal);font-size:.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:5px 14px;border-radius:999px;margin-bottom:20px;position:relative;}
+
+.levels-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px;max-width:1000px;margin:40px auto 0;padding:0 24px 64px;}
+.level-card{
+  background:var(--card);border:2px solid var(--border);border-radius:20px;
+  padding:28px 24px;cursor:pointer;transition:all .28s;position:relative;overflow:hidden;
+  text-align:left;
+}
+.level-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--lcolor,var(--teal));}
+.level-card:hover{transform:translateY(-6px);box-shadow:0 16px 40px rgba(0,0,0,.12);border-color:var(--lcolor,var(--teal));}
+.level-card.locked{opacity:.45;cursor:not-allowed;}
+.level-card.locked:hover{transform:none;box-shadow:none;}
+.level-card.completed::after{
+  content:'✓ Complete';position:absolute;top:16px;right:16px;
+  background:rgba(16,185,129,.15);color:#059669;font-size:.7rem;font-weight:700;
+  padding:4px 10px;border-radius:999px;letter-spacing:.5px;
+}
+.lv-num{font-family:'Georgia',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.lv-title{font-family:'Georgia',sans-serif;font-weight:800;font-size:1.1rem;color:var(--ink);margin-bottom:6px;line-height:1.3;}
+.lv-desc{font-size:.82rem;color:var(--muted);line-height:1.5;margin-bottom:16px;}
+.lv-meta{display:flex;gap:8px;flex-wrap:wrap;}
+.lv-pill{font-size:.72rem;font-weight:600;padding:3px 10px;border-radius:999px;background:var(--surface);border:1px solid var(--border);color:var(--muted);}
+.lv-lock{font-size:1.5rem;position:absolute;bottom:24px;right:24px;opacity:.4;}
+.lv-play{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:'Georgia',sans-serif;font-weight:700;font-size:.82rem;
+  color:var(--lcolor,var(--teal));margin-top:4px;
+}
+
+/* ── GAME SCREEN ── */
+#gameScreen{display:none;min-height:calc(100vh - 64px);}
+
+/* TOP BAR */
+.game-topbar{
+  background:var(--ink);color:#fff;padding:12px 24px;
+  display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+}
+.gtb-back{
+  background:rgba(255,255,255,.1);border:none;color:#fff;
+  border-radius:8px;padding:8px 14px;cursor:pointer;font-family:'Georgia',sans-serif;
+  font-weight:700;font-size:.82rem;transition:.2s;white-space:nowrap;
+}
+.gtb-back:hover{background:rgba(0,194,168,.25);color:var(--teal);}
+.gtb-info{display:flex;align-items:center;gap:12px;flex:1;flex-wrap:wrap;}
+.gtb-chapter{font-family:'Georgia',sans-serif;font-weight:700;font-size:.95rem;}
+.gtb-progress{flex:1;min-width:100px;}
+.gtb-prog-track{background:rgba(255,255,255,.15);border-radius:999px;height:6px;}
+.gtb-prog-fill{height:100%;border-radius:999px;transition:width .4s;background:var(--teal);}
+.gtb-score{font-family:'Georgia',sans-serif;font-weight:800;font-size:.9rem;color:var(--teal);white-space:nowrap;}
+.gtb-lives{display:flex;gap:4px;font-size:1rem;}
+
+/* QUESTION DISPLAY */
+.q-display{
+  text-align:center;padding:32px 24px 20px;
+  background:linear-gradient(180deg,rgba(13,17,23,.04) 0%,transparent 100%);
+}
+.q-round-badge{
+  display:inline-block;font-family:'Georgia',sans-serif;font-weight:700;font-size:.7rem;
+  letter-spacing:1.5px;text-transform:uppercase;padding:4px 14px;
+  border-radius:999px;margin-bottom:14px;border:1px solid;
+}
+.q-prompt{font-family:'Georgia',sans-serif;font-weight:800;font-size:clamp(1rem,3vw,1.4rem);color:var(--ink);line-height:1.35;max-width:700px;margin:0 auto 6px;}
+.q-sub{font-size:.85rem;color:var(--muted);margin-bottom:4px;}
+
+/* DRAG AREA */
+.game-arena{
+  max-width:860px;margin:0 auto;padding:0 20px 48px;
+  display:flex;flex-direction:column;gap:24px;
+}
+
+/* ANSWER TILES */
+.tiles-section{text-align:center;}
+.tiles-label{font-size:.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+.tiles-wrap{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;min-height:60px;}
+.drag-tile{
+  padding:12px 20px;border-radius:12px;border:2px solid var(--border);
+  background:var(--card);font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:500;
+  color:var(--ink);cursor:grab;transition:all .2s;user-select:none;
+  box-shadow:0 2px 8px rgba(0,0,0,.06);
+  touch-action:none; /* for pointer events */
+}
+.drag-tile:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.1);border-color:var(--teal);}
+.drag-tile.dragging{opacity:.35;transform:scale(.95);}
+.drag-tile.ghost{
+  position:fixed;pointer-events:none;z-index:999;
+  background:var(--ink);color:#fff;border-color:var(--teal);
+  box-shadow:0 12px 32px rgba(0,0,0,.25);transform:rotate(-2deg) scale(1.06);
+  transition:none;
+}
+
+/* DROP BASKETS */
+.baskets-section{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;}
+.basket{
+  border:2.5px dashed var(--border);border-radius:16px;
+  padding:16px;min-height:110px;transition:all .25s;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:8px;
+  position:relative;background:rgba(255,255,255,.6);
+}
+.basket.drag-over{border-color:var(--teal);background:rgba(0,194,168,.07);}
+.basket.correct-basket{border-color:var(--green);background:rgba(52,211,153,.08);}
+.basket.wrong-basket{border-color:var(--coral);background:rgba(255,107,107,.07);}
+.basket-label{
+  font-family:'Georgia',sans-serif;font-weight:700;font-size:.82rem;
+  text-align:center;line-height:1.35;color:var(--ink);margin-bottom:4px;
+}
+.basket-hint{font-size:.72rem;color:var(--muted);font-style:italic;text-align:center;}
+.basket-icon{font-size:1.4rem;margin-bottom:2px;}
+.basket-dropped{
+  background:var(--ink);color:#fff;border-radius:8px;padding:8px 14px;
+  font-size:.82rem;font-weight:500;text-align:center;width:100%;
+  animation:dropIn .3s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes dropIn{from{opacity:0;transform:scale(.7) translateY(-10px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.basket-result-icon{position:absolute;top:-12px;right:-12px;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.9rem;font-weight:700;display:none;}
+.basket.correct-basket .basket-result-icon{display:flex;background:#10b981;color:#fff;}
+.basket.wrong-basket .basket-result-icon{display:flex;background:var(--coral);color:#fff;}
+
+/* FEEDBACK TOAST */
+.feedback-toast{
+  position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-20px);
+  padding:14px 28px;border-radius:14px;font-family:'Georgia',sans-serif;font-weight:700;
+  font-size:.95rem;z-index:500;pointer-events:none;
+  opacity:0;transition:all .3s;white-space:nowrap;
+  box-shadow:0 8px 28px rgba(0,0,0,.18);
+}
+.feedback-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.feedback-toast.correct{background:#10b981;color:#fff;}
+.feedback-toast.wrong{background:var(--coral);color:#fff;}
+
+/* ROUND COMPLETE OVERLAY */
+.round-overlay{
+  display:none;position:fixed;inset:0;background:rgba(13,17,23,.85);
+  z-index:400;align-items:center;justify-content:center;padding:24px;
+}
+.round-overlay.show{display:flex;}
+.round-card{
+  background:var(--card);border-radius:24px;padding:40px 36px;
+  text-align:center;max-width:420px;width:100%;
+  animation:popIn .4s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes popIn{from{opacity:0;transform:scale(.8);}to{opacity:1;transform:scale(1);}}
+.rc-emoji{font-size:3.5rem;margin-bottom:16px;}
+.rc-title{font-family:'Georgia',sans-serif;font-weight:800;font-size:1.5rem;color:var(--ink);margin-bottom:8px;}
+.rc-sub{font-size:.9rem;color:var(--muted);line-height:1.6;margin-bottom:24px;}
+.rc-stars{font-size:1.8rem;letter-spacing:4px;margin-bottom:20px;}
+.rc-btn{
+  padding:14px 36px;border-radius:999px;border:none;cursor:pointer;
+  font-family:'Georgia',sans-serif;font-weight:800;font-size:.95rem;
+  background:var(--teal);color:var(--ink);transition:all .25s;width:100%;margin-bottom:10px;
+  box-shadow:0 4px 16px rgba(0,194,168,.35);
+}
+.rc-btn:hover{background:var(--teal2);transform:translateY(-1px);}
+.rc-btn-outline{background:transparent;border:2px solid var(--border);color:var(--ink);box-shadow:none;}
+.rc-btn-outline:hover{border-color:var(--teal);color:var(--teal);}
+
+/* LEVEL COMPLETE OVERLAY */
+.level-overlay{
+  display:none;position:fixed;inset:0;background:rgba(13,17,23,.92);
+  z-index:400;align-items:center;justify-content:center;padding:24px;
+}
+.level-overlay.show{display:flex;}
+.level-card-big{
+  background:var(--ink2);border-radius:28px;padding:48px 40px;
+  text-align:center;max-width:460px;width:100%;color:#fff;
+  border:1px solid rgba(255,255,255,.1);
+  animation:popIn .5s cubic-bezier(.34,1.56,.64,1);
+}
+.lc-emoji{font-size:4rem;margin-bottom:20px;}
+.lc-title{font-family:'Georgia',sans-serif;font-weight:800;font-size:1.8rem;letter-spacing:-0.5px;margin-bottom:8px;}
+.lc-title .acc{color:var(--teal);}
+.lc-sub{color:rgba(255,255,255,.6);font-size:.9rem;line-height:1.7;margin-bottom:28px;}
+.lc-stats{display:flex;gap:0;border:1px solid rgba(255,255,255,.1);border-radius:12px;overflow:hidden;margin-bottom:28px;}
+.lc-stat{flex:1;padding:16px 8px;border-right:1px solid rgba(255,255,255,.1);}
+.lc-stat:last-child{border-right:none;}
+.lc-stat-n{font-family:'Georgia',sans-serif;font-weight:800;font-size:1.5rem;color:var(--teal);}
+.lc-stat-l{font-size:.72rem;color:rgba(255,255,255,.5);}
+.lc-btn{padding:14px 36px;border-radius:999px;border:none;cursor:pointer;font-family:'Georgia',sans-serif;font-weight:800;font-size:.95rem;background:var(--teal);color:var(--ink);width:100%;margin-bottom:10px;transition:.25s;box-shadow:0 4px 20px rgba(0,194,168,.4);}
+.lc-btn:hover{background:var(--teal2);transform:translateY(-1px);}
+.lc-btn-ghost{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.15);box-shadow:none;}
+.lc-btn-ghost:hover{background:rgba(255,255,255,.15);transform:translateY(-1px);}
+
+/* CONFETTI */
+.confetti-container{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999;overflow:hidden;}
+.confetti-piece{position:absolute;width:10px;height:10px;top:-10px;animation:confettiFall linear forwards;}
+@keyframes confettiFall{to{transform:translateY(110vh) rotate(720deg);opacity:0;}}
+
+@media(max-width:640px){
+  .hamburger{display:flex;}
+  .nav-links{display:none;position:fixed;top:64px;left:0;right:0;background:var(--ink2);flex-direction:column;padding:16px;gap:4px;z-index:99;}
+  .nav-links.open{display:flex;}
+  .nav-links a{padding:12px 16px;font-size:1rem;}
+  .baskets-section{grid-template-columns:1fr 1fr;}
+  .game-topbar{gap:10px;}
+  .gtb-progress{display:none;}
+}
+@media(max-width:400px){
+  .baskets-section{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-brand">Digital<span>Lit</span></a>
+  <div class="nav-links" id="navLinks">
+    <a href="index.html">Home</a>
+    <a href="study-guide.html">Study Guide</a>
+    <a href="flashcards.html">Flashcards</a>
+    <a href="search.html">Search</a>
+    <a href="practice-test.html">Practice Test</a>
+    <a href="game.html" class="active">Match It Game!</a>
+  </div>
+  <div class="hamburger" onclick="toggleNav()"><span></span><span></span><span></span></div>
+</nav>
+
+<!-- ═══════════════════════════════ LEVEL SELECT ═══════════════════════════ -->
+<div id="levelSelect">
+  <div class="hero-game">
+    <div class="game-badge">🎮 Interactive Game</div>
+    <h1>Match <span class="accent">It!</span></h1>
+    <p>Drag the correct answer into the right basket. Get all questions right to unlock the next chapter level!</p>
+  </div>
+  <div class="levels-grid" id="levelsGrid"></div>
+</div>
+
+<!-- ═══════════════════════════════ GAME SCREEN ══════════════════════════════ -->
+<div id="gameScreen">
+  <div class="game-topbar">
+    <button class="gtb-back" onclick="exitToMenu()">← Levels</button>
+    <div class="gtb-info">
+      <span class="gtb-chapter" id="gtbChapter">Chapter 1</span>
+      <div class="gtb-progress">
+        <div class="gtb-prog-track"><div class="gtb-prog-fill" id="gtbFill" style="width:0%"></div></div>
+      </div>
+      <span class="gtb-score" id="gtbScore">0 pts</span>
+      <div class="gtb-lives" id="gtbLives"></div>
+    </div>
+  </div>
+
+  <div class="q-display">
+    <div class="q-round-badge" id="qBadge">Round 1 of 6</div>
+    <div class="q-prompt" id="qPrompt"></div>
+    <div class="q-sub" id="qSub">Drag the matching answer into its basket ↓</div>
+  </div>
+
+  <div class="game-arena">
+    <div class="tiles-section">
+      <div class="tiles-label">Answer Tiles — Drag one to a basket</div>
+      <div class="tiles-wrap" id="tilesWrap"></div>
+    </div>
+    <div class="baskets-section" id="basketsWrap"></div>
+  </div>
+</div>
+
+<!-- Overlays -->
+<div class="round-overlay" id="roundOverlay">
+  <div class="round-card">
+    <div class="rc-emoji" id="rcEmoji"></div>
+    <div class="rc-title" id="rcTitle"></div>
+    <div class="rc-sub" id="rcSub"></div>
+    <div class="rc-stars" id="rcStars"></div>
+    <button class="rc-btn" id="rcNextBtn" onclick="nextRound()">Next Question →</button>
+    <button class="rc-btn rc-btn-outline" onclick="retryRound()">Try Again</button>
+  </div>
+</div>
+
+<div class="level-overlay" id="levelOverlay">
+  <div class="level-card-big">
+    <div class="lc-emoji" id="lcEmoji"></div>
+    <div class="lc-title" id="lcTitle"></div>
+    <div class="lc-sub" id="lcSub"></div>
+    <div class="lc-stats">
+      <div class="lc-stat"><div class="lc-stat-n" id="lcScore"></div><div class="lc-stat-l">Points</div></div>
+      <div class="lc-stat"><div class="lc-stat-n" id="lcRounds"></div><div class="lc-stat-l">Questions</div></div>
+      <div class="lc-stat"><div class="lc-stat-n" id="lcAccuracy"></div><div class="lc-stat-l">Accuracy</div></div>
+    </div>
+    <button class="lc-btn" id="lcNextBtn" onclick="goNextLevel()">Unlock Next Level 🔓</button>
+    <button class="lc-btn lc-btn-ghost" onclick="exitToMenu()">Back to Levels</button>
+  </div>
+</div>
+
+<div class="feedback-toast" id="feedbackToast"></div>
+<div class="confetti-container" id="confettiContainer"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════
+//  GAME DATA  — 6 Chapter levels, 6 questions each
+// ═══════════════════════════════════════════════════════════════════════
+const LEVELS = [
+ {
+  id:1, title:"Digital Literacy Basics", chapter:"Chapter 1",
+  color:"#00c2a8", icon:"💻",
+  desc:"Match key terms from Chapter 1 — digital literacy and media.",
+  rounds:[
+   {
+    prompt:"What is DIGITAL LITERACY?",
+    pairs:[
+      {basket:"Using tech responsibly & safely",tile:"Using tech responsibly & safely"},
+      {basket:"Repairing computers",tile:"Repairing computers"},
+      {basket:"Writing code",tile:"Writing code"},
+    ],
+    correct:0
+   },
+   {
+    prompt:"Which is an example of DIGITAL MEDIA?",
+    pairs:[
+      {basket:"Podcast",tile:"Podcast 🎙️"},
+      {basket:"Printed textbook",tile:"Printed textbook 📕"},
+      {basket:"Computer mouse",tile:"Computer mouse 🖱️"},
+    ],
+    correct:0
+   },
+   {
+    prompt:"Match: A person who is DIGITALLY LITERATE can…",
+    pairs:[
+      {basket:"Evaluate info critically online",tile:"Evaluate info critically 🔎"},
+      {basket:"Only type very fast",tile:"Type very fast ⌨️"},
+      {basket:"Avoid all technology",tile:"Avoid all technology 🚫"},
+    ],
+    correct:0
+   },
+   {
+    prompt:"Why is digital literacy IMPORTANT in the Caribbean?",
+    pairs:[
+      {basket:"Schools & businesses rely on technology",tile:"Schools & businesses rely on it ✓"},
+      {basket:"Everyone has a computer at home",tile:"Everyone has a computer ✗"},
+      {basket:"It replaces reading and writing",tile:"It replaces reading ✗"},
+    ],
+    correct:0
+   },
+   {
+    prompt:"Which word means content shared DIGITALLY?",
+    pairs:[
+      {basket:"Digital Media",tile:"Digital Media"},
+      {basket:"Digital Hardware",tile:"Digital Hardware"},
+      {basket:"Digital Piracy",tile:"Digital Piracy"},
+    ],
+    correct:0
+   },
+   {
+    prompt:"Digital literacy helps students…",
+    pairs:[
+      {basket:"Stay safe online & access information",tile:"Stay safe & access info ✓"},
+      {basket:"Spend more money online",tile:"Spend more money ✗"},
+      {basket:"Avoid using any devices",tile:"Avoid devices ✗"},
+    ],
+    correct:0
+   },
+  ]
+ },
+ {
+  id:2, title:"Hardware & Software", chapter:"Chapter 3",
+  color:"#7b6fff", icon:"🖥️",
+  desc:"Identify input devices, output devices, storage, and software types.",
+  rounds:[
+   {
+    prompt:"Which is an INPUT device?",
+    pairs:[
+      {basket:"Scanner",tile:"Scanner 🖨️"},
+      {basket:"Monitor",tile:"Monitor 🖥️"},
+      {basket:"Speaker",tile:"Speaker 🔊"},
+    ],
+    correct:0
+   },
+   {
+    prompt:"Which is an OUTPUT device?",
+    pairs:[
+      {basket:"Printer",tile:"Printer 🖨️"},
+      {basket:"Keyboard",tile:"Keyboard ⌨️"},
+      {basket:"Flash Drive",tile:"Flash Drive 💾"},
+    ],
+    correct:0
+   },
+   {
+    prompt:"Which is a STORAGE device?",
+    pairs:[
+      {basket:"Hard Drive",tile:"Hard Drive 💿"},
+      {basket:"Mouse",tile:"Mouse 🖱️"},
+      {basket:"Monitor",tile:"Monitor 🖥️"},
+    ],
+    correct:0
+   },
+   {
+    prompt:"Which is SYSTEM SOFTWARE?",
+    pairs:[
+      {basket:"Windows",tile:"Windows 🪟"},
+      {basket:"Microsoft Word",tile:"Microsoft Word 📝"},
+      {basket:"Canva",tile:"Canva 🎨"},
+    ],
+    correct:0
+   },
+   {
+    prompt:"Which is APPLICATION SOFTWARE?",
+    pairs:[
+      {basket:"Zoom",tile:"Zoom 📹"},
+      {basket:"Android",tile:"Android 🤖"},
+      {basket:"macOS",tile:"macOS 🍎"},
+    ],
+    correct:0
+   },
+   {
+    prompt:"What is HARDWARE?",
+    pairs:[
+      {basket:"Physical computer components",tile:"Physical components ✓"},
+      {basket:"Programs that run on a computer",tile:"Programs & instructions ✗"},
+      {basket:"Online storage services",tile:"Online storage ✗"},
+    ],
+    correct:0
+   },
+  ]
+ },
+ {
+  id:3, title:"Apps & Cloud", chapter:"Chapter 4",
+  color:"#f5a623", icon:"☁️",
+  desc:"Match cloud services, productivity tools, and app types.",
+  rounds:[
+   {
+    prompt:"Which is a CLOUD STORAGE service?",
+    pairs:[
+      {basket:"Google Drive",tile:"Google Drive ☁️"},
+      {basket:"Microsoft Word",tile:"Microsoft Word 📝"},
+      {basket:"Windows",tile:"Windows 🪟"},
+    ],
+    correct:0
+   },
+   {
+    prompt:"What is CLOUD COMPUTING?",
+    pairs:[
+      {basket:"Online services accessed via internet",tile:"Online services via internet ✓"},
+      {basket:"Software installed on a hard drive",tile:"Installed on hard drive ✗"},
+      {basket:"A type of hardware device",tile:"A hardware device ✗"},
+    ],
+    correct:0
+   },
+   {
+    prompt:"Which is a WORD PROCESSOR?",
+    pairs:[
+      {basket:"Google Docs",tile:"Google Docs 📄"},
+      {basket:"Google Sheets",tile:"Google Sheets 📊"},
+      {basket:"Google Slides",tile:"Google Slides 📑"},
+    ],
+    correct:0
+   },
+   {
+    prompt:"A SPREADSHEET tool helps you…",
+    pairs:[
+      {basket:"Organise data & calculations",tile:"Organise data & calculate ✓"},
+      {basket:"Create slideshows",tile:"Create slideshows ✗"},
+      {basket:"Edit videos",tile:"Edit videos ✗"},
+    ],
+    correct:0
+   },
+   {
+    prompt:"An ADVANTAGE of cloud storage is…",
+    pairs:[
+      {basket:"Access files from anywhere",tile:"Access anywhere ✓"},
+      {basket:"Requires no internet",tile:"No internet needed ✗"},
+      {basket:"Unlimited free storage always",tile:"Always unlimited & free ✗"},
+    ],
+    correct:0
+   },
+   {
+    prompt:"Which app is used for PRESENTATIONS?",
+    pairs:[
+      {basket:"Google Slides",tile:"Google Slides 📑"},
+      {basket:"Google Docs",tile:"Google Docs 📄"},
+      {basket:"Audacity",tile:"Audacity 🎚️"},
+    ],
+    correct:0
+   },
+  ]
+ },
+ {
+  id:4, title:"Digital Citizenship & Safety", chapter:"Chapters 6–8",
+  color:"#ff6b6b", icon:"🛡️",
+  desc:"Match concepts on digital footprints, netiquette, phishing, and cyberbullying.",
+  rounds:[
+   {
+    prompt:"What is a DIGITAL FOOTPRINT?",
+    pairs:[
+      {basket:"Trail of info left online",tile:"Trail of info online ✓"},
+      {basket:"A type of computer virus",tile:"A computer virus ✗"},
+      {basket:"Your device's physical size",tile:"Device physical size ✗"},
+    ],
+    correct:0
+   },
+   {
+    prompt:"Which is an ACTIVE digital footprint?",
+    pairs:[
+      {basket:"A photo you post on social media",tile:"Photo you post 📸"},
+      {basket:"Cookies stored by a website",tile:"Website cookies 🍪"},
+      {basket:"Location data collected by an app",tile:"Location data 📍"},
+    ],
+    correct:0
+   },
+   {
+    prompt:"What is NETIQUETTE?",
+    pairs:[
+      {basket:"Proper online behaviour",tile:"Proper online behaviour ✓"},
+      {basket:"A type of internet security",tile:"Internet security software ✗"},
+      {basket:"The speed of a connection",tile:"Connection speed ✗"},
+    ],
+    correct:0
+   },
+   {
+    prompt:"Which is a sign of PHISHING?",
+    pairs:[
+      {basket:"Urgent message asking for password",tile:"Urgent password request ⚠️"},
+      {basket:"An email from a known friend",tile:"Email from known friend 📧"},
+      {basket:"A secure website with HTTPS",tile:"Secure HTTPS site 🔒"},
+    ],
+    correct:0
+   },
+   {
+    prompt:"What is CYBERBULLYING?",
+    pairs:[
+      {basket:"Bullying using digital technology",tile:"Bullying via technology ✓"},
+      {basket:"Antivirus software",tile:"Antivirus software ✗"},
+      {basket:"A method of file sharing",tile:"File sharing method ✗"},
+    ],
+    correct:0
+   },
+   {
+    prompt:"How do you AVOID PLAGIARISM?",
+    pairs:[
+      {basket:"Cite sources & paraphrase correctly",tile:"Cite & paraphrase ✓"},
+      {basket:"Copy text without quotation marks",tile:"Copy without quotes ✗"},
+      {basket:"Submit someone else's work",tile:"Use someone else's work ✗"},
+    ],
+    correct:0
+   },
+  ]
+ },
+ {
+  id:5, title:"Communication & E-Commerce", chapter:"Chapters 9 & 12",
+  color:"#34d399", icon:"🛒",
+  desc:"Match synchronous vs asynchronous communication and e-commerce concepts.",
+  rounds:[
+   {
+    prompt:"Which is SYNCHRONOUS communication?",
+    pairs:[
+      {basket:"Video call",tile:"Video Call 📹"},
+      {basket:"Email",tile:"Email 📧"},
+      {basket:"Discussion board post",tile:"Discussion Board 💬"},
+    ],
+    correct:0
+   },
+   {
+    prompt:"Which is ASYNCHRONOUS communication?",
+    pairs:[
+      {basket:"Email",tile:"Email 📧"},
+      {basket:"Live chat",tile:"Live Chat 💬"},
+      {basket:"Phone call",tile:"Phone Call 📞"},
+    ],
+    correct:0
+   },
+   {
+    prompt:"What does B2C mean?",
+    pairs:[
+      {basket:"Business to Consumer",tile:"Business to Consumer ✓"},
+      {basket:"Browser to Customer",tile:"Browser to Customer ✗"},
+      {basket:"Buying to Consuming",tile:"Buying to Consuming ✗"},
+    ],
+    correct:0
+   },
+   {
+    prompt:"What is E-COMMERCE?",
+    pairs:[
+      {basket:"Buying & selling goods online",tile:"Buying & selling online ✓"},
+      {basket:"Sending business emails",tile:"Sending business emails ✗"},
+      {basket:"The study of computers in business",tile:"Studying computers in biz ✗"},
+    ],
+    correct:0
+   },
+   {
+    prompt:"A SAFE online shopping tip is…",
+    pairs:[
+      {basket:"Use trusted sites with HTTPS",tile:"Use trusted HTTPS sites ✓"},
+      {basket:"Use public Wi-Fi for payments",tile:"Use public Wi-Fi ✗"},
+      {basket:"Share bank details by email",tile:"Share bank details by email ✗"},
+    ],
+    correct:0
+   },
+   {
+    prompt:"Which is a COLLABORATION tool?",
+    pairs:[
+      {basket:"Google Docs",tile:"Google Docs 📝"},
+      {basket:"Audacity",tile:"Audacity 🎚️"},
+      {basket:"TikTok",tile:"TikTok 🎵"},
+    ],
+    correct:0
+   },
+  ]
+ },
+ {
+  id:6, title:"Emerging Tech & Wellness", chapter:"Chapters 13 & 14",
+  color:"#f472b6", icon:"🥽",
+  desc:"Drag answers about VR, AI, and healthy digital habits.",
+  rounds:[
+   {
+    prompt:"What is VIRTUAL REALITY?",
+    pairs:[
+      {basket:"A simulated digital environment",tile:"Simulated digital environment ✓"},
+      {basket:"A type of social media platform",tile:"Social media platform ✗"},
+      {basket:"A method of online shopping",tile:"Online shopping method ✗"},
+    ],
+    correct:0
+   },
+   {
+    prompt:"Which is a USE of virtual reality?",
+    pairs:[
+      {basket:"Healthcare training simulations",tile:"Healthcare simulations 🏥"},
+      {basket:"Sending emails",tile:"Sending emails 📧"},
+      {basket:"Writing spreadsheets",tile:"Writing spreadsheets 📊"},
+    ],
+    correct:0
+   },
+   {
+    prompt:"What does the 20-20-20 RULE help with?",
+    pairs:[
+      {basket:"Reducing eye strain",tile:"Reducing eye strain 👁️"},
+      {basket:"Time management for homework",tile:"Time management 📚"},
+      {basket:"Setting strong passwords",tile:"Setting passwords 🔒"},
+    ],
+    correct:0
+   },
+   {
+    prompt:"What is ARTIFICIAL INTELLIGENCE?",
+    pairs:[
+      {basket:"Machines simulating human intelligence",tile:"Machines simulating intelligence ✓"},
+      {basket:"A type of cloud storage",tile:"A cloud storage type ✗"},
+      {basket:"A social networking platform",tile:"Social networking ✗"},
+    ],
+    correct:0
+   },
+   {
+    prompt:"A NEGATIVE EFFECT of excessive screen time is…",
+    pairs:[
+      {basket:"Eye strain & poor posture",tile:"Eye strain & posture problems ✓"},
+      {basket:"Improved physical fitness",tile:"Improved fitness ✗"},
+      {basket:"Stronger social relationships",tile:"Stronger relationships ✗"},
+    ],
+    correct:0
+   },
+   {
+    prompt:"Which is a HEALTHY DIGITAL HABIT?",
+    pairs:[
+      {basket:"Take regular screen breaks",tile:"Regular screen breaks ✓"},
+      {basket:"Use devices right before bed",tile:"Use devices before bed ✗"},
+      {basket:"Never exercise — just study online",tile:"Never exercise ✗"},
+    ],
+    correct:0
+   },
+  ]
+ },
+];
+
+// ═══════════════════════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════════════════════
+let completedLevels = JSON.parse(localStorage.getItem('dlg_completed') || '[]');
+let currentLevel = null;
+let currentRound = 0;
+let score = 0;
+let lives = 3;
+let totalAttempts = 0;
+let totalCorrect = 0;
+let roundPassed = false;
+
+// ═══════════════════════════════════════════════════════════════════════
+//  LEVEL SELECT
+// ═══════════════════════════════════════════════════════════════════════
+function renderLevelSelect() {
+  const grid = document.getElementById('levelsGrid');
+  grid.innerHTML = LEVELS.map((lv, i) => {
+    const locked = i > 0 && !completedLevels.includes(i); // unlock by prev index
+    const done   = completedLevels.includes(lv.id);
+    return `
+      <div class="level-card ${locked?'locked':''} ${done?'completed':''}"
+           style="--lcolor:${lv.color}"
+           onclick="${locked ? 'showLocked()' : `startLevel(${lv.id})`}">
+        <div class="lv-num">Level ${lv.id} · ${lv.chapter}</div>
+        <div class="lv-title">${lv.icon} ${lv.title}</div>
+        <div class="lv-desc">${lv.desc}</div>
+        <div class="lv-meta">
+          <span class="lv-pill">📋 ${lv.rounds.length} questions</span>
+          ${done ? '<span class="lv-pill" style="color:#059669;border-color:#10b981;">✓ Cleared</span>' : ''}
+        </div>
+        ${locked ? `<div class="lv-lock">🔒</div>` : `<div class="lv-play" style="margin-top:12px;">▶ Play →</div>`}
+      </div>`;
+  }).join('');
+}
+
+function showLocked() { showToast('🔒 Complete the previous level first!','wrong'); }
+
+// ═══════════════════════════════════════════════════════════════════════
+//  START / EXIT
+// ═══════════════════════════════════════════════════════════════════════
+function startLevel(id) {
+  currentLevel = LEVELS.find(l => l.id === id);
+  currentRound = 0;
+  score = 0; lives = 3; totalAttempts = 0; totalCorrect = 0;
+  document.getElementById('levelSelect').style.display = 'none';
+  document.getElementById('gameScreen').style.display = 'block';
+  document.getElementById('gtbChapter').textContent = `${currentLevel.icon} ${currentLevel.title}`;
+  document.getElementById('gtbChapter').style.color = currentLevel.color;
+  updateTopBar();
+  renderRound();
+}
+
+function exitToMenu() {
+  document.getElementById('levelSelect').style.display = 'block';
+  document.getElementById('gameScreen').style.display = 'none';
+  document.getElementById('roundOverlay').classList.remove('show');
+  document.getElementById('levelOverlay').classList.remove('show');
+  renderLevelSelect();
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+//  RENDER ROUND
+// ═══════════════════════════════════════════════════════════════════════
+function renderRound() {
+  roundPassed = false;
+  const lv = currentLevel;
+  const rd = lv.rounds[currentRound];
+  const total = lv.rounds.length;
+
+  // Badge
+  const badge = document.getElementById('qBadge');
+  badge.textContent = `Question ${currentRound+1} of ${total}`;
+  badge.style.background = lv.color + '22';
+  badge.style.color = lv.color;
+  badge.style.borderColor = lv.color + '66';
+
+  document.getElementById('qPrompt').textContent = rd.prompt;
+
+  // Shuffle tiles
+  const shuffled = [...rd.pairs].map((p,i)=>({...p, origIdx:i})).sort(()=>Math.random()-.5);
+
+  // Render tiles
+  document.getElementById('tilesWrap').innerHTML = shuffled.map((p,i) =>
+    `<div class="drag-tile" id="tile-${i}" data-idx="${p.origIdx}">${p.tile}</div>`
+  ).join('');
+
+  // Render baskets
+  document.getElementById('basketsWrap').innerHTML = rd.pairs.map((p,i) =>
+    `<div class="basket" id="basket-${i}" data-idx="${i}">
+       <div class="basket-result-icon" id="bri-${i}">✓</div>
+       <div class="basket-icon">${['🅰️','🅱️','🅲️'][i]||'📦'}</div>
+       <div class="basket-label">${p.basket}</div>
+       <div class="basket-hint">Drop answer here</div>
+     </div>`
+  ).join('');
+
+  initDrag();
+  updateTopBar();
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+//  DRAG & DROP (pointer events — works on touch & mouse)
+// ═══════════════════════════════════════════════════════════════════════
+function initDrag() {
+  const tiles = document.querySelectorAll('.drag-tile');
+  tiles.forEach(tile => {
+    tile.addEventListener('pointerdown', onPointerDown);
+  });
+}
+
+let ghostEl = null;
+let activeTile = null;
+let startX, startY;
+
+function onPointerDown(e) {
+  if (roundPassed) return;
+  e.preventDefault();
+  activeTile = e.currentTarget;
+  const rect = activeTile.getBoundingClientRect();
+  startX = e.clientX - rect.left;
+  startY = e.clientY - rect.top;
+
+  // Create ghost
+  ghostEl = activeTile.cloneNode(true);
+  ghostEl.classList.add('ghost');
+  ghostEl.style.width = rect.width + 'px';
+  ghostEl.style.left = (e.clientX - startX) + 'px';
+  ghostEl.style.top  = (e.clientY - startY) + 'px';
+  document.body.appendChild(ghostEl);
+  activeTile.classList.add('dragging');
+
+  document.addEventListener('pointermove', onPointerMove);
+  document.addEventListener('pointerup', onPointerUp);
+}
+
+function onPointerMove(e) {
+  if (!ghostEl) return;
+  ghostEl.style.left = (e.clientX - startX) + 'px';
+  ghostEl.style.top  = (e.clientY - startY) + 'px';
+
+  // Highlight baskets on hover
+  document.querySelectorAll('.basket').forEach(b => {
+    const r = b.getBoundingClientRect();
+    const over = e.clientX>=r.left && e.clientX<=r.right && e.clientY>=r.top && e.clientY<=r.bottom;
+    b.classList.toggle('drag-over', over);
+  });
+}
+
+function onPointerUp(e) {
+  document.removeEventListener('pointermove', onPointerMove);
+  document.removeEventListener('pointerup', onPointerUp);
+  if (!ghostEl || !activeTile) return;
+
+  // Find basket under pointer
+  let dropped = null;
+  document.querySelectorAll('.basket').forEach(b => {
+    const r = b.getBoundingClientRect();
+    if (e.clientX>=r.left && e.clientX<=r.right && e.clientY>=r.top && e.clientY<=r.bottom) dropped = b;
+    b.classList.remove('drag-over');
+  });
+
+  ghostEl.remove(); ghostEl = null;
+  activeTile.classList.remove('dragging');
+
+  if (dropped) {
+    const tileIdx  = parseInt(activeTile.dataset.idx);
+    const basketIdx = parseInt(dropped.dataset.idx);
+    checkAnswer(tileIdx, basketIdx, activeTile, dropped);
+  }
+  activeTile = null;
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+//  CHECK ANSWER
+// ═══════════════════════════════════════════════════════════════════════
+function checkAnswer(tileIdx, basketIdx, tileEl, basketEl) {
+  const rd = currentLevel.rounds[currentRound];
+  totalAttempts++;
+  const isCorrect = (basketIdx === rd.correct) && (tileIdx === rd.correct);
+
+  if (isCorrect) {
+    totalCorrect++;
+    score += 100;
+    roundPassed = true;
+
+    // Visual feedback
+    basketEl.classList.add('correct-basket');
+    basketEl.querySelector('.basket-result-icon').textContent = '✓';
+    basketEl.querySelector('.basket-result-icon').style.background = '#10b981';
+    const dropped = document.createElement('div');
+    dropped.className = 'basket-dropped';
+    dropped.textContent = tileEl.textContent;
+    basketEl.appendChild(dropped);
+    tileEl.remove();
+    showToast('🎉 Correct! +100 pts', 'correct');
+    updateTopBar();
+
+    setTimeout(() => showRoundComplete(true), 700);
+  } else {
+    lives--;
+    basketEl.classList.add('wrong-basket');
+    basketEl.querySelector('.basket-result-icon').textContent = '✗';
+    basketEl.querySelector('.basket-result-icon').style.background = 'var(--coral)';
+    setTimeout(() => {
+      basketEl.classList.remove('wrong-basket');
+      basketEl.querySelector('.basket-result-icon').style.display='none';
+    }, 800);
+
+    showToast('❌ Wrong basket — try again!', 'wrong');
+    score = Math.max(0, score - 10);
+    updateTopBar();
+
+    if (lives <= 0) {
+      setTimeout(() => showRoundComplete(false), 700);
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+//  ROUND COMPLETE
+// ═══════════════════════════════════════════════════════════════════════
+function showRoundComplete(passed) {
+  const ol = document.getElementById('roundOverlay');
+  if (passed) {
+    const isLast = currentRound === currentLevel.rounds.length - 1;
+    document.getElementById('rcEmoji').textContent = isLast ? '🏆' : '✅';
+    document.getElementById('rcTitle').textContent = isLast ? 'Level Complete!' : 'Correct!';
+    document.getElementById('rcSub').textContent = isLast
+      ? `You answered all ${currentLevel.rounds.length} questions correctly!`
+      : `Great job! Ready for question ${currentRound + 2}?`;
+    document.getElementById('rcStars').textContent = lives === 3 ? '⭐⭐⭐' : lives === 2 ? '⭐⭐' : '⭐';
+    document.getElementById('rcNextBtn').textContent = isLast ? 'See Results 🎉' : 'Next Question →';
+    document.getElementById('rcNextBtn').onclick = isLast ? showLevelComplete : nextRound;
+  } else {
+    document.getElementById('rcEmoji').textContent = '💔';
+    document.getElementById('rcTitle').textContent = 'Out of Lives!';
+    document.getElementById('rcSub').textContent = 'You need to get this question right to move on. Try again!';
+    document.getElementById('rcStars').textContent = '';
+    document.getElementById('rcNextBtn').style.display = 'none';
+  }
+  ol.classList.add('show');
+}
+
+function nextRound() {
+  document.getElementById('roundOverlay').classList.remove('show');
+  document.getElementById('rcNextBtn').style.display = '';
+  currentRound++;
+  lives = 3;
+  renderRound();
+}
+
+function retryRound() {
+  document.getElementById('roundOverlay').classList.remove('show');
+  document.getElementById('rcNextBtn').style.display = '';
+  lives = 3;
+  renderRound();
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+//  LEVEL COMPLETE
+// ═══════════════════════════════════════════════════════════════════════
+function showLevelComplete() {
+  document.getElementById('roundOverlay').classList.remove('show');
+
+  // Save progress
+  if (!completedLevels.includes(currentLevel.id)) {
+    completedLevels.push(currentLevel.id);
+    localStorage.setItem('dlg_completed', JSON.stringify(completedLevels));
+  }
+
+  const pct = Math.round(totalCorrect / Math.max(1, totalAttempts) * 100);
+  const nextLv = LEVELS.find(l => l.id === currentLevel.id + 1);
+
+  document.getElementById('lcEmoji').textContent = pct >= 80 ? '🏆' : '🎉';
+  document.getElementById('lcTitle').innerHTML = `Level <span class="acc">${currentLevel.id}</span> Complete!`;
+  document.getElementById('lcSub').textContent = nextLv
+    ? `Excellent work on "${currentLevel.title}"! You've unlocked Level ${nextLv.id}: ${nextLv.title}.`
+    : `You've completed ALL levels! You're a Digital Literacy champion! 🥇`;
+  document.getElementById('lcScore').textContent = score;
+  document.getElementById('lcRounds').textContent = currentLevel.rounds.length;
+  document.getElementById('lcAccuracy').textContent = pct + '%';
+
+  const nb = document.getElementById('lcNextBtn');
+  if (nextLv) {
+    nb.textContent = `Play Level ${nextLv.id}: ${nextLv.title} 🔓`;
+    nb.onclick = () => { document.getElementById('levelOverlay').classList.remove('show'); startLevel(nextLv.id); };
+  } else {
+    nb.textContent = '🎊 Back to Levels';
+    nb.onclick = exitToMenu;
+  }
+
+  document.getElementById('levelOverlay').classList.add('show');
+  launchConfetti();
+}
+
+function goNextLevel() {} // overridden per level
+
+// ═══════════════════════════════════════════════════════════════════════
+//  TOP BAR
+// ═══════════════════════════════════════════════════════════════════════
+function updateTopBar() {
+  const lv = currentLevel;
+  const prog = (currentRound / lv.rounds.length * 100);
+  document.getElementById('gtbFill').style.width = prog + '%';
+  document.getElementById('gtbFill').style.background = lv.color;
+  document.getElementById('gtbScore').textContent = score + ' pts';
+  document.getElementById('gtbLives').innerHTML = Array.from({length:3},(_,i)=> i < lives ? '❤️' : '🖤').join('');
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════════════════════════════════
+let toastTimer;
+function showToast(msg, type) {
+  const t = document.getElementById('feedbackToast');
+  t.textContent = msg;
+  t.className = `feedback-toast ${type} show`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+//  CONFETTI
+// ═══════════════════════════════════════════════════════════════════════
+function launchConfetti() {
+  const colors = ['#00c2a8','#7b6fff','#f5a623','#ff6b6b','#34d399','#f472b6','#fff'];
+  const container = document.getElementById('confettiContainer');
+  container.innerHTML = '';
+  for (let i = 0; i < 80; i++) {
+    const p = document.createElement('div');
+    p.className = 'confetti-piece';
+    const color = colors[Math.floor(Math.random()*colors.length)];
+    const size = 6 + Math.random()*10;
+    const isCircle = Math.random() > 0.5;
+    p.style.cssText = `
+      left:${Math.random()*100}%;
+      width:${size}px; height:${size}px;
+      background:${color};
+      border-radius:${isCircle?'50%':'2px'};
+      animation-duration:${1.5+Math.random()*2}s;
+      animation-delay:${Math.random()*0.8}s;
+    `;
+    container.appendChild(p);
+  }
+  setTimeout(() => container.innerHTML = '', 4000);
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════════════════════
+function toggleNav() { document.getElementById('navLinks').classList.toggle('open'); }
+renderLevelSelect();
+</script>
+</body>
+</html>

@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Flashcards | Digital Literacy CCSLC</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Georgia:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <style>
   :root {
     --ink:#0d1117;--ink2:#1e2633;--teal:#00c2a8;--teal2:#00968a;
@@ -17,7 +17,7 @@
   body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--text);}
 
   nav{background:var(--ink);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:100;}
-  .nav-brand{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:var(--teal);text-decoration:none;}
+  .nav-brand{font-family:'Georgia',sans-serif;font-weight:800;font-size:1.1rem;color:var(--teal);text-decoration:none;}
   .nav-brand span{color:#fff;}
   .nav-links{display:flex;gap:4px;}
   .nav-links a{color:rgba(255,255,255,0.7);text-decoration:none;font-size:0.875rem;font-weight:500;padding:8px 14px;border-radius:8px;transition:all 0.2s;}
@@ -26,7 +26,7 @@
   .hamburger span{display:block;width:22px;height:2px;background:#fff;border-radius:2px;}
 
   .page-header{background:linear-gradient(135deg,var(--ink) 0%,var(--ink2) 100%);padding:48px 24px 56px;color:#fff;text-align:center;}
-  .page-header h1{font-family:'Syne',sans-serif;font-size:clamp(1.6rem,4vw,2.6rem);font-weight:800;letter-spacing:-0.5px;margin-bottom:10px;}
+  .page-header h1{font-family:'Georgia',sans-serif;font-size:clamp(1.6rem,4vw,2.6rem);font-weight:800;letter-spacing:-0.5px;margin-bottom:10px;}
   .page-header p{color:rgba(255,255,255,0.6);font-size:0.95rem;}
 
   .container{max-width:960px;margin:0 auto;padding:0 24px;}
@@ -35,7 +35,7 @@
   .filter-bar{display:flex;gap:8px;flex-wrap:wrap;padding:24px 0 8px;justify-content:center;}
   .filter-btn{
     padding:8px 18px;border-radius:999px;border:1.5px solid var(--border);
-    background:var(--card);font-family:'Syne',sans-serif;font-weight:600;font-size:0.8rem;
+    background:var(--card);font-family:'Georgia',sans-serif;font-weight:600;font-size:0.8rem;
     cursor:pointer;transition:all 0.2s;color:var(--muted);
   }
   .filter-btn:hover{border-color:var(--teal);color:var(--teal);}
@@ -49,10 +49,10 @@
 
   /* DECK CONTROLS */
   .deck-controls{display:flex;align-items:center;justify-content:center;gap:16px;padding:16px 0 28px;flex-wrap:wrap;}
-  .count-badge{font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;color:var(--ink);background:var(--card);border:1px solid var(--border);padding:8px 20px;border-radius:999px;}
+  .count-badge{font-family:'Georgia',sans-serif;font-weight:700;font-size:0.95rem;color:var(--ink);background:var(--card);border:1px solid var(--border);padding:8px 20px;border-radius:999px;}
   .ctrl-btn{
     padding:10px 24px;border-radius:999px;border:none;cursor:pointer;
-    font-family:'Syne',sans-serif;font-weight:700;font-size:0.875rem;
+    font-family:'Georgia',sans-serif;font-weight:700;font-size:0.875rem;
     transition:all 0.2s;
   }
   .ctrl-btn-outline{background:var(--card);border:1.5px solid var(--border);color:var(--ink);}
@@ -76,7 +76,7 @@
   .card-label{font-size:0.7rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;opacity:0.5;margin-bottom:16px;}
   .card-front .card-label{color:#fff;}
   .card-back .card-label{color:var(--teal);}
-  .card-term{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(1.2rem,3vw,1.7rem);text-align:center;line-height:1.3;}
+  .card-term{font-family:'Georgia',sans-serif;font-weight:800;font-size:clamp(1.2rem,3vw,1.7rem);text-align:center;line-height:1.3;}
   .card-front .card-term{color:#fff;}
   .card-back .card-def{font-size:clamp(0.9rem,2vw,1.05rem);text-align:center;color:var(--text);line-height:1.6;}
   .card-back .card-chapter{font-size:0.75rem;color:var(--muted);margin-top:16px;font-style:italic;}
@@ -101,10 +101,10 @@
     padding-bottom:12px;border-bottom:2px solid var(--border);
   }
   .chapter-badge{
-    font-family:'Syne',sans-serif;font-size:0.75rem;font-weight:700;
+    font-family:'Georgia',sans-serif;font-size:0.75rem;font-weight:700;
     padding:4px 12px;border-radius:999px;
   }
-  .chapter-heading{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);}
+  .chapter-heading{font-family:'Georgia',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);}
   .chapter-count{font-size:0.8rem;color:var(--muted);margin-left:auto;}
 
   /* MINI CARDS GRID */
@@ -115,7 +115,7 @@
     display:flex;flex-direction:column;gap:6px;
   }
   .mini-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.07);border-color:var(--teal);}
-  .mini-card-term{font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem;color:var(--ink);}
+  .mini-card-term{font-family:'Georgia',sans-serif;font-weight:700;font-size:0.9rem;color:var(--ink);}
   .mini-card-def{font-size:0.82rem;color:var(--muted);line-height:1.5;}
   .mini-card-flip{font-size:0.72rem;color:var(--teal);margin-top:4px;font-weight:600;}
 
@@ -131,11 +131,11 @@
   }
   .modal-front{background:var(--ink);color:#fff;padding:40px 36px;text-align:center;}
   .modal-back{background:var(--card);padding:32px 36px;text-align:center;border-top:3px solid var(--teal);}
-  .modal-term{font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem;margin-bottom:8px;}
+  .modal-term{font-family:'Georgia',sans-serif;font-weight:800;font-size:1.6rem;margin-bottom:8px;}
   .modal-def{font-size:1rem;color:var(--text);line-height:1.7;}
   .modal-close{
     margin-top:24px;padding:10px 28px;border-radius:999px;border:none;
-    background:var(--ink);color:#fff;font-family:'Syne',sans-serif;font-weight:700;
+    background:var(--ink);color:#fff;font-family:'Georgia',sans-serif;font-weight:700;
     cursor:pointer;transition:0.2s;
   }
   .modal-close:hover{background:var(--ink2);}
@@ -156,6 +156,7 @@
     <a href="study-guide.html">Study Guide</a>
     <a href="flashcards.html" class="active">Flashcards</a>
     <a href="search.html">Search</a>
+	<a href="game.html">Match It Game!</a>
     <a href="practice-test.html">Practice Test</a>
   </div>
   <div class="hamburger" onclick="toggleNav()"><span></span><span></span><span></span></div>
