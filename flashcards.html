@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flashcards | Digital Literacy CCSLC</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:#0d1117;--ink2:#1e2633;--teal:#00c2a8;--teal2:#00968a;
+    --amber:#f5a623;--lavender:#7b6fff;--coral:#ff6b6b;--green:#34d399;--pink:#f472b6;
+    --surface:#f7f9fc;--card:#fff;--border:#e2e8f0;--text:#374151;--muted:#6b7280;
+    --radius:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--text);}
+
+  nav{background:var(--ink);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:100;}
+  .nav-brand{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:var(--teal);text-decoration:none;}
+  .nav-brand span{color:#fff;}
+  .nav-links{display:flex;gap:4px;}
+  .nav-links a{color:rgba(255,255,255,0.7);text-decoration:none;font-size:0.875rem;font-weight:500;padding:8px 14px;border-radius:8px;transition:all 0.2s;}
+  .nav-links a:hover,.nav-links a.active{background:rgba(0,194,168,0.15);color:var(--teal);}
+  .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;}
+  .hamburger span{display:block;width:22px;height:2px;background:#fff;border-radius:2px;}
+
+  .page-header{background:linear-gradient(135deg,var(--ink) 0%,var(--ink2) 100%);padding:48px 24px 56px;color:#fff;text-align:center;}
+  .page-header h1{font-family:'Syne',sans-serif;font-size:clamp(1.6rem,4vw,2.6rem);font-weight:800;letter-spacing:-0.5px;margin-bottom:10px;}
+  .page-header p{color:rgba(255,255,255,0.6);font-size:0.95rem;}
+
+  .container{max-width:960px;margin:0 auto;padding:0 24px;}
+
+  /* CHAPTER FILTER */
+  .filter-bar{display:flex;gap:8px;flex-wrap:wrap;padding:24px 0 8px;justify-content:center;}
+  .filter-btn{
+    padding:8px 18px;border-radius:999px;border:1.5px solid var(--border);
+    background:var(--card);font-family:'Syne',sans-serif;font-weight:600;font-size:0.8rem;
+    cursor:pointer;transition:all 0.2s;color:var(--muted);
+  }
+  .filter-btn:hover{border-color:var(--teal);color:var(--teal);}
+  .filter-btn.active{background:var(--ink);border-color:var(--ink);color:#fff;}
+
+  /* PROGRESS */
+  .progress-bar-area{text-align:center;padding:16px 0 8px;}
+  .progress-label{font-size:0.85rem;color:var(--muted);margin-bottom:8px;}
+  .progress-track{background:var(--border);border-radius:999px;height:6px;max-width:400px;margin:0 auto;}
+  .progress-fill{height:100%;border-radius:999px;background:var(--teal);transition:width 0.4s;}
+
+  /* DECK CONTROLS */
+  .deck-controls{display:flex;align-items:center;justify-content:center;gap:16px;padding:16px 0 28px;flex-wrap:wrap;}
+  .count-badge{font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;color:var(--ink);background:var(--card);border:1px solid var(--border);padding:8px 20px;border-radius:999px;}
+  .ctrl-btn{
+    padding:10px 24px;border-radius:999px;border:none;cursor:pointer;
+    font-family:'Syne',sans-serif;font-weight:700;font-size:0.875rem;
+    transition:all 0.2s;
+  }
+  .ctrl-btn-outline{background:var(--card);border:1.5px solid var(--border);color:var(--ink);}
+  .ctrl-btn-outline:hover{border-color:var(--teal);color:var(--teal);}
+  .ctrl-btn-primary{background:var(--teal);color:var(--ink);}
+  .ctrl-btn-primary:hover{background:var(--teal2);transform:translateY(-1px);}
+
+  /* FLASHCARD */
+  .flashcard-wrapper{display:flex;justify-content:center;margin-bottom:24px;}
+  .flashcard-scene{width:100%;max-width:600px;height:280px;perspective:1200px;cursor:pointer;}
+  @media(max-width:500px){.flashcard-scene{height:240px;}}
+  .flashcard{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform 0.55s cubic-bezier(0.4,0,0.2,1);}
+  .flashcard.flipped{transform:rotateY(180deg);}
+  .card-face{
+    position:absolute;inset:0;border-radius:20px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:32px;backface-visibility:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.1);
+  }
+  .card-front{background:var(--ink);color:#fff;}
+  .card-back{background:var(--card);transform:rotateY(180deg);border:2px solid var(--teal);}
+  .card-label{font-size:0.7rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;opacity:0.5;margin-bottom:16px;}
+  .card-front .card-label{color:#fff;}
+  .card-back .card-label{color:var(--teal);}
+  .card-term{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(1.2rem,3vw,1.7rem);text-align:center;line-height:1.3;}
+  .card-front .card-term{color:#fff;}
+  .card-back .card-def{font-size:clamp(0.9rem,2vw,1.05rem);text-align:center;color:var(--text);line-height:1.6;}
+  .card-back .card-chapter{font-size:0.75rem;color:var(--muted);margin-top:16px;font-style:italic;}
+  .card-hint{font-size:0.78rem;opacity:0.4;margin-top:20px;}
+  .card-front .card-hint{color:#fff;}
+
+  /* NAV ARROWS */
+  .card-nav{display:flex;align-items:center;justify-content:center;gap:20px;margin-bottom:40px;}
+  .arrow-btn{
+    width:48px;height:48px;border-radius:50%;border:1.5px solid var(--border);
+    background:var(--card);cursor:pointer;font-size:1.2rem;
+    display:flex;align-items:center;justify-content:center;
+    transition:all 0.2s;color:var(--text);
+  }
+  .arrow-btn:hover{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .arrow-btn:disabled{opacity:0.3;cursor:not-allowed;}
+
+  /* CHAPTER SECTIONS */
+  .chapter-section{margin-bottom:48px;padding-top:12px;}
+  .chapter-section-header{
+    display:flex;align-items:center;gap:14px;margin-bottom:20px;
+    padding-bottom:12px;border-bottom:2px solid var(--border);
+  }
+  .chapter-badge{
+    font-family:'Syne',sans-serif;font-size:0.75rem;font-weight:700;
+    padding:4px 12px;border-radius:999px;
+  }
+  .chapter-heading{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);}
+  .chapter-count{font-size:0.8rem;color:var(--muted);margin-left:auto;}
+
+  /* MINI CARDS GRID */
+  .cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;}
+  .mini-card{
+    background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+    padding:18px 20px;cursor:pointer;transition:all 0.25s;
+    display:flex;flex-direction:column;gap:6px;
+  }
+  .mini-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.07);border-color:var(--teal);}
+  .mini-card-term{font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem;color:var(--ink);}
+  .mini-card-def{font-size:0.82rem;color:var(--muted);line-height:1.5;}
+  .mini-card-flip{font-size:0.72rem;color:var(--teal);margin-top:4px;font-weight:600;}
+
+  /* MODAL */
+  .modal-overlay{
+    display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);
+    z-index:200;align-items:center;justify-content:center;padding:20px;
+  }
+  .modal-overlay.open{display:flex;}
+  .modal-card{
+    width:100%;max-width:520px;border-radius:20px;overflow:hidden;
+    box-shadow:0 24px 64px rgba(0,0,0,0.3);
+  }
+  .modal-front{background:var(--ink);color:#fff;padding:40px 36px;text-align:center;}
+  .modal-back{background:var(--card);padding:32px 36px;text-align:center;border-top:3px solid var(--teal);}
+  .modal-term{font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem;margin-bottom:8px;}
+  .modal-def{font-size:1rem;color:var(--text);line-height:1.7;}
+  .modal-close{
+    margin-top:24px;padding:10px 28px;border-radius:999px;border:none;
+    background:var(--ink);color:#fff;font-family:'Syne',sans-serif;font-weight:700;
+    cursor:pointer;transition:0.2s;
+  }
+  .modal-close:hover{background:var(--ink2);}
+
+  @media(max-width:640px){
+    .hamburger{display:flex;}
+    .nav-links{display:none;position:fixed;top:64px;left:0;right:0;background:var(--ink2);flex-direction:column;padding:16px;gap:4px;z-index:99;}
+    .nav-links.open{display:flex;}
+    .nav-links a{padding:12px 16px;font-size:1rem;}
+  }
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-brand">Digital<span>Lit</span></a>
+  <div class="nav-links" id="navLinks">
+    <a href="index.html">Home</a>
+    <a href="study-guide.html">Study Guide</a>
+    <a href="flashcards.html" class="active">Flashcards</a>
+    <a href="search.html">Search</a>
+    <a href="practice-test.html">Practice Test</a>
+  </div>
+  <div class="hamburger" onclick="toggleNav()"><span></span><span></span><span></span></div>
+</nav>
+
+<div class="page-header">
+  <h1>🃏 Flashcards</h1>
+  <p>Click any card to reveal the definition. Use the deck player or browse by chapter.</p>
+</div>
+
+<div class="container">
+  <!-- FILTER -->
+  <div class="filter-bar" id="filterBar">
+    <button class="filter-btn active" onclick="setChapter('all',this)">All Chapters</button>
+    <button class="filter-btn" onclick="setChapter(1,this)" style="border-color:var(--teal);color:var(--teal)">Ch 1</button>
+    <button class="filter-btn" onclick="setChapter(2,this)">Ch 2</button>
+    <button class="filter-btn" onclick="setChapter(3,this)">Ch 3</button>
+    <button class="filter-btn" onclick="setChapter(4,this)">Ch 4</button>
+    <button class="filter-btn" onclick="setChapter(5,this)">Ch 5</button>
+    <button class="filter-btn" onclick="setChapter(6,this)">Ch 6</button>
+    <button class="filter-btn" onclick="setChapter(7,this)">Ch 7</button>
+    <button class="filter-btn" onclick="setChapter(8,this)">Ch 8</button>
+    <button class="filter-btn" onclick="setChapter(9,this)">Ch 9</button>
+    <button class="filter-btn" onclick="setChapter(10,this)">Ch 10</button>
+    <button class="filter-btn" onclick="setChapter(11,this)">Ch 11</button>
+    <button class="filter-btn" onclick="setChapter(12,this)">Ch 12</button>
+    <button class="filter-btn" onclick="setChapter(13,this)">Ch 13</button>
+    <button class="filter-btn" onclick="setChapter(14,this)">Ch 14</button>
+  </div>
+
+  <!-- DECK PLAYER -->
+  <div class="progress-bar-area">
+    <div class="progress-label" id="progressLabel">Card 1 of 60</div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:2%"></div></div>
+  </div>
+  <div class="deck-controls">
+    <button class="ctrl-btn ctrl-btn-outline" onclick="shuffleDeck()">🔀 Shuffle</button>
+    <span class="count-badge" id="deckCount">60 cards</span>
+    <button class="ctrl-btn ctrl-btn-primary" onclick="resetDeck()">↩ Reset</button>
+  </div>
+
+  <div class="flashcard-wrapper">
+    <div class="flashcard-scene" onclick="flipCard()">
+      <div class="flashcard" id="flashcard">
+        <div class="card-face card-front">
+          <div class="card-label">Term</div>
+          <div class="card-term" id="cardTerm">Digital Literacy</div>
+          <div class="card-hint">Tap to reveal definition →</div>
+        </div>
+        <div class="card-face card-back">
+          <div class="card-label">Definition</div>
+          <div class="card-def" id="cardDef">The ability to use digital tools effectively and responsibly</div>
+          <div class="card-chapter" id="cardChapter">Chapter 1</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-nav">
+    <button class="arrow-btn" id="prevBtn" onclick="prevCard()">‹</button>
+    <button class="arrow-btn" id="nextBtn" onclick="nextCard()">›</button>
+  </div>
+
+  <!-- CHAPTER SECTIONS -->
+  <div id="chapterSections"></div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+  <div class="modal-card">
+    <div class="modal-front">
+      <div style="font-size:0.7rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;opacity:0.5;margin-bottom:12px;">Term</div>
+      <div class="modal-term" id="modalTerm"></div>
+    </div>
+    <div class="modal-back">
+      <div style="font-size:0.7rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--teal);margin-bottom:12px;">Definition</div>
+      <div class="modal-def" id="modalDef"></div>
+      <button class="modal-close" onclick="document.getElementById('modal').classList.remove('open')">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const ALL_CARDS = [
+  // Ch 1
+  {ch:1,chName:"Ch 1: Digital Literacy",term:"Digital Literacy",def:"The ability to use digital tools effectively and responsibly"},
+  {ch:1,chName:"Ch 1: Digital Literacy",term:"Digital Technology",def:"Electronic tools and systems used to create, store, and share information"},
+  {ch:1,chName:"Ch 1: Digital Literacy",term:"Digital Media",def:"Content created and shared digitally such as videos, images, podcasts, and websites"},
+  {ch:1,chName:"Ch 1: Digital Literacy",term:"Digitally Literate Person",def:"Someone who uses technology confidently, understands online safety, and evaluates information carefully"},
+  {ch:1,chName:"Ch 1: Digital Literacy",term:"Why Digital Literacy Matters",def:"It enables people to communicate, access information, complete tasks, stay safe online, and participate in modern society"},
+  // Ch 2
+  {ch:2,chName:"Ch 2: Digital Technology",term:"Binary Code",def:"The system of 0s and 1s that digital devices use to process information"},
+  {ch:2,chName:"Ch 2: Digital Technology",term:"Wireless Device",def:"A device that connects to a network without physical cables, e.g. smartphone or tablet"},
+  {ch:2,chName:"Ch 2: Digital Technology",term:"Wireless Technology Advantage",def:"Portability, convenience, mobility, and faster communication"},
+  {ch:2,chName:"Ch 2: Digital Technology",term:"Wireless Technology Disadvantage",def:"Security risks, dependence on internet, and battery limitations"},
+  {ch:2,chName:"Ch 2: Digital Technology",term:"Types of Digital Media",def:"Videos, images, podcasts, music, websites, social media posts, and online advertisements"},
+  // Ch 3
+  {ch:3,chName:"Ch 3: Hardware & Software",term:"Hardware",def:"The physical components of a computer or digital device that can be seen and touched"},
+  {ch:3,chName:"Ch 3: Hardware & Software",term:"Software",def:"Programs and instructions that tell hardware what to do"},
+  {ch:3,chName:"Ch 3: Hardware & Software",term:"Input Device",def:"A device used to enter data into a computer — e.g. keyboard, mouse, scanner"},
+  {ch:3,chName:"Ch 3: Hardware & Software",term:"Output Device",def:"A device used to display or present information — e.g. monitor, printer, speakers"},
+  {ch:3,chName:"Ch 3: Hardware & Software",term:"Storage Device",def:"A device used to store information — e.g. hard drive, flash drive, memory card"},
+  {ch:3,chName:"Ch 3: Hardware & Software",term:"System Software",def:"Software that manages the computer's operations — e.g. Windows, macOS, Android"},
+  {ch:3,chName:"Ch 3: Hardware & Software",term:"Application Software",def:"Software that helps users complete specific tasks — e.g. Microsoft Word, Zoom, Canva"},
+  {ch:3,chName:"Ch 3: Hardware & Software",term:"CPU",def:"Central Processing Unit — the hardware component that processes data"},
+  // Ch 4
+  {ch:4,chName:"Ch 4: Apps & Cloud",term:"Application (App)",def:"Software designed to perform specific tasks, e.g. WhatsApp, TikTok, Google Classroom"},
+  {ch:4,chName:"Ch 4: Apps & Cloud",term:"Productivity Tools",def:"Software used to complete work efficiently — e.g. word processors, spreadsheets, presentation software"},
+  {ch:4,chName:"Ch 4: Apps & Cloud",term:"Cloud Computing",def:"Online storage and services accessed through the internet"},
+  {ch:4,chName:"Ch 4: Apps & Cloud",term:"Cloud Storage Examples",def:"Google Drive, OneDrive, Dropbox, and iCloud"},
+  {ch:4,chName:"Ch 4: Apps & Cloud",term:"Cloud Storage Advantage",def:"Access files anywhere, automatic backups, easy collaboration, reduced device storage needs"},
+  {ch:4,chName:"Ch 4: Apps & Cloud",term:"Word Processor",def:"Productivity software used to create documents — e.g. Microsoft Word, Google Docs"},
+  // Ch 5
+  {ch:5,chName:"Ch 5: Web 2.0 & Multimedia",term:"Web 2.0",def:"Interactive websites and platforms where users can create and share content"},
+  {ch:5,chName:"Ch 5: Web 2.0 & Multimedia",term:"Web 2.0 Features",def:"User-generated content, social networking, collaboration, and interactive communication"},
+  {ch:5,chName:"Ch 5: Web 2.0 & Multimedia",term:"Multimedia Production",def:"Creating digital content using different forms of media such as text, images, audio, video, and animation"},
+  {ch:5,chName:"Ch 5: Web 2.0 & Multimedia",term:"Canva",def:"A graphic design tool used for multimedia production"},
+  {ch:5,chName:"Ch 5: Web 2.0 & Multimedia",term:"Audacity",def:"An audio editing tool used for multimedia production"},
+  // Ch 6
+  {ch:6,chName:"Ch 6: Digital Citizenship",term:"Digital Citizenship",def:"Responsible, safe, and ethical behaviour when using digital technologies"},
+  {ch:6,chName:"Ch 6: Digital Citizenship",term:"Digital Footprint",def:"The trail of information left online through posting, commenting, browsing, and sharing"},
+  {ch:6,chName:"Ch 6: Digital Citizenship",term:"Active Digital Footprint",def:"Information intentionally shared online — e.g. posts, comments, uploaded videos"},
+  {ch:6,chName:"Ch 6: Digital Citizenship",term:"Passive Digital Footprint",def:"Information collected without direct user input — e.g. cookies, browsing history, location tracking"},
+  {ch:6,chName:"Ch 6: Digital Citizenship",term:"Netiquette",def:"Proper online behaviour — e.g. using respectful language, not typing in ALL CAPS"},
+  {ch:6,chName:"Ch 6: Digital Citizenship",term:"Managing Your Digital Footprint",def:"Think before posting, use privacy settings, avoid oversharing, use respectful language"},
+  // Ch 7
+  {ch:7,chName:"Ch 7: Copyright & IP",term:"Intellectual Property Rights",def:"Legal protection for creations of the mind such as music, books, inventions, and artwork"},
+  {ch:7,chName:"Ch 7: Copyright & IP",term:"Copyright",def:"Legal protection given to creators of original work"},
+  {ch:7,chName:"Ch 7: Copyright & IP",term:"Plagiarism",def:"Using another person's work without giving credit"},
+  {ch:7,chName:"Ch 7: Copyright & IP",term:"Piracy",def:"The illegal copying or distribution of copyrighted material"},
+  {ch:7,chName:"Ch 7: Copyright & IP",term:"How to Avoid Plagiarism",def:"Cite sources properly, use quotation marks, and paraphrase information correctly"},
+  // Ch 8
+  {ch:8,chName:"Ch 8: Cyber Safety",term:"Cyberbullying",def:"Bullying that takes place online using digital technology"},
+  {ch:8,chName:"Ch 8: Cyber Safety",term:"Effects of Cyberbullying",def:"Anxiety, depression, low self-esteem, and social isolation"},
+  {ch:8,chName:"Ch 8: Cyber Safety",term:"Phishing",def:"A scam where criminals trick people into revealing personal information such as passwords or banking details"},
+  {ch:8,chName:"Ch 8: Cyber Safety",term:"Signs of Phishing",def:"Suspicious links, requests for passwords, poor spelling/grammar, and urgent messages"},
+  {ch:8,chName:"Ch 8: Cyber Safety",term:"Identity Theft",def:"When someone steals another person's personal information to use fraudulently"},
+  {ch:8,chName:"Ch 8: Cyber Safety",term:"Cybercrime",def:"Crimes committed using digital technology — e.g. hacking, online fraud, phishing"},
+  {ch:8,chName:"Ch 8: Cyber Safety",term:"Staying Safe Online",def:"Use strong passwords, avoid suspicious links, enable two-factor authentication, keep software updated"},
+  // Ch 9
+  {ch:9,chName:"Ch 9: Communication & Collaboration",term:"Synchronous Communication",def:"Communication that occurs in real time — e.g. video calls, live chat, phone calls"},
+  {ch:9,chName:"Ch 9: Communication & Collaboration",term:"Asynchronous Communication",def:"Communication that does not happen in real time — e.g. email, discussion boards, recorded videos"},
+  {ch:9,chName:"Ch 9: Communication & Collaboration",term:"Collaboration",def:"Working together to complete a task"},
+  {ch:9,chName:"Ch 9: Communication & Collaboration",term:"Collaboration Tools",def:"Google Docs, Slides, Sheets, Microsoft Teams, and Trello"},
+  {ch:9,chName:"Ch 9: Communication & Collaboration",term:"Email vs Live Chat",def:"Email is formal and asynchronous; live chat is informal and synchronous"},
+  // Ch 10
+  {ch:10,chName:"Ch 10: Websites & Web Design",term:"Website",def:"A collection of related web pages available online"},
+  {ch:10,chName:"Ch 10: Websites & Web Design",term:"Purposes of Websites",def:"Education, entertainment, communication, business, news, and e-commerce"},
+  {ch:10,chName:"Ch 10: Websites & Web Design",term:"Good Website Design Principles",def:"Clear navigation, readable fonts, appropriate colours, mobile-friendly layout, fast loading speed"},
+  {ch:10,chName:"Ch 10: Websites & Web Design",term:"Hyperlink",def:"A clickable link that navigates users to another page or website"},
+  {ch:10,chName:"Ch 10: Websites & Web Design",term:"Accessibility (Web)",def:"Ensuring a website can be used by all users, including those with disabilities"},
+  // Ch 11
+  {ch:11,chName:"Ch 11: Digital Tools in Society",term:"Telemedicine",def:"Healthcare delivered via digital technology — e.g. online doctor appointments"},
+  {ch:11,chName:"Ch 11: Digital Tools in Society",term:"Digital Society",def:"A society where digital tools are widely used in education, business, healthcare, and daily life"},
+  {ch:11,chName:"Ch 11: Digital Tools in Society",term:"Technology Addiction",def:"Overuse of digital devices to the point where it negatively impacts daily life"},
+  // Ch 12
+  {ch:12,chName:"Ch 12: E-Commerce",term:"E-Commerce",def:"Buying and selling goods and services online using digital platforms"},
+  {ch:12,chName:"Ch 12: E-Commerce",term:"B2C",def:"Business to Consumer — businesses selling directly to customers online"},
+  {ch:12,chName:"Ch 12: E-Commerce",term:"B2B",def:"Business to Business — businesses selling to other businesses online"},
+  {ch:12,chName:"Ch 12: E-Commerce",term:"C2C",def:"Consumer to Consumer — customers selling to other customers online"},
+  {ch:12,chName:"Ch 12: E-Commerce",term:"Online Payment Methods",def:"Credit cards, debit cards, PayPal, online banking, and mobile wallets"},
+  {ch:12,chName:"Ch 12: E-Commerce",term:"Safe Online Shopping",def:"Use trusted websites, check for secure payment symbols, avoid public Wi-Fi for transactions"},
+  // Ch 13
+  {ch:13,chName:"Ch 13: Virtual Reality & Emerging Tech",term:"Virtual Reality (VR)",def:"Technology that creates a simulated digital environment users can interact with"},
+  {ch:13,chName:"Ch 13: Virtual Reality & Emerging Tech",term:"Augmented Reality (AR)",def:"Technology that overlays digital elements onto the real-world environment"},
+  {ch:13,chName:"Ch 13: Virtual Reality & Emerging Tech",term:"Artificial Intelligence (AI)",def:"Technology that enables machines to simulate human intelligence and decision-making"},
+  {ch:13,chName:"Ch 13: Virtual Reality & Emerging Tech",term:"VR Uses",def:"Gaming, education, healthcare training, tourism, and architecture"},
+  {ch:13,chName:"Ch 13: Virtual Reality & Emerging Tech",term:"VR Disadvantages",def:"Expensive equipment, motion sickness, and limited accessibility"},
+  // Ch 14
+  {ch:14,chName:"Ch 14: Health & Wellness",term:"Screen Time",def:"The amount of time spent looking at digital screens"},
+  {ch:14,chName:"Ch 14: Health & Wellness",term:"The 20-20-20 Rule",def:"Every 20 minutes, look at something 20 feet away for 20 seconds to reduce eye strain"},
+  {ch:14,chName:"Ch 14: Health & Wellness",term:"Eye Strain",def:"Eye discomfort caused by prolonged screen use — symptoms include headaches and blurred vision"},
+  {ch:14,chName:"Ch 14: Health & Wellness",term:"Healthy Digital Habits",def:"Regular screen breaks, correct posture, limiting screen time before bed, and exercising regularly"},
+  {ch:14,chName:"Ch 14: Health & Wellness",term:"Mental Health & Social Media",def:"Excessive social media use may contribute to stress, anxiety, and low self-esteem"},
+];
+
+const chColors = {
+  1:'var(--teal)',2:'var(--teal)',3:'var(--teal)',4:'var(--teal)',
+  5:'var(--lavender)',9:'var(--lavender)',
+  6:'var(--amber)',7:'var(--amber)',8:'var(--amber)',
+  10:'var(--coral)',11:'var(--coral)',12:'var(--coral)',
+  13:'var(--green)',14:'var(--green)'
+};
+
+let currentChapter = 'all';
+let deck = [...ALL_CARDS];
+let idx = 0;
+let flipped = false;
+
+function getFiltered() {
+  return currentChapter === 'all' ? ALL_CARDS : ALL_CARDS.filter(c => c.ch === currentChapter);
+}
+
+function setChapter(ch, btn) {
+  currentChapter = ch;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  deck = [...getFiltered()];
+  idx = 0;
+  flipped = false;
+  document.getElementById('flashcard').classList.remove('flipped');
+  updateCard();
+  renderChapterSections();
+}
+
+function updateCard() {
+  const card = deck[idx];
+  document.getElementById('cardTerm').textContent = card.term;
+  document.getElementById('cardDef').textContent = card.def;
+  document.getElementById('cardChapter').textContent = card.chName;
+  document.getElementById('progressLabel').textContent = `Card ${idx+1} of ${deck.length}`;
+  document.getElementById('progressFill').style.width = ((idx+1)/deck.length*100)+'%';
+  document.getElementById('deckCount').textContent = `${deck.length} cards`;
+  document.getElementById('prevBtn').disabled = idx === 0;
+  document.getElementById('nextBtn').disabled = idx === deck.length - 1;
+}
+
+function flipCard() {
+  flipped = !flipped;
+  document.getElementById('flashcard').classList.toggle('flipped', flipped);
+}
+
+function nextCard() {
+  if (idx < deck.length - 1) {
+    idx++;
+    flipped = false;
+    document.getElementById('flashcard').classList.remove('flipped');
+    updateCard();
+  }
+}
+
+function prevCard() {
+  if (idx > 0) {
+    idx--;
+    flipped = false;
+    document.getElementById('flashcard').classList.remove('flipped');
+    updateCard();
+  }
+}
+
+function shuffleDeck() {
+  deck = getFiltered().sort(() => Math.random() - 0.5);
+  idx = 0;
+  flipped = false;
+  document.getElementById('flashcard').classList.remove('flipped');
+  updateCard();
+}
+
+function resetDeck() {
+  deck = [...getFiltered()];
+  idx = 0;
+  flipped = false;
+  document.getElementById('flashcard').classList.remove('flipped');
+  updateCard();
+}
+
+function openModal(term, def) {
+  document.getElementById('modalTerm').textContent = term;
+  document.getElementById('modalDef').textContent = def;
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('modal')) {
+    document.getElementById('modal').classList.remove('open');
+  }
+}
+
+function renderChapterSections() {
+  const sections = document.getElementById('chapterSections');
+  const chapters = currentChapter === 'all'
+    ? [...new Set(ALL_CARDS.map(c => c.ch))].sort((a,b)=>a-b)
+    : [currentChapter];
+
+  sections.innerHTML = chapters.map(ch => {
+    const cards = ALL_CARDS.filter(c => c.ch === ch);
+    const color = chColors[ch] || 'var(--teal)';
+    const name = cards[0].chName;
+    return `
+      <div class="chapter-section">
+        <div class="chapter-section-header">
+          <span class="chapter-badge" style="background:${color}22;color:${color};">${name}</span>
+          <span class="chapter-count">${cards.length} cards</span>
+        </div>
+        <div class="cards-grid">
+          ${cards.map(card => `
+            <div class="mini-card" onclick="openModal('${card.term.replace(/'/g,"\\'")}','${card.def.replace(/'/g,"\\'")}')">
+              <div class="mini-card-term">${card.term}</div>
+              <div class="mini-card-def">${card.def.length > 80 ? card.def.slice(0,80)+'…' : card.def}</div>
+              <div class="mini-card-flip">Tap to see full →</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// Init
+updateCard();
+renderChapterSections();
+
+function toggleNav() { document.getElementById('navLinks').classList.toggle('open'); }
+</script>
+</body>
+</html>

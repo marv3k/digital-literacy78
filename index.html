@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digital Literacy | CCSLC Study Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0d1117;
+    --ink2: #1e2633;
+    --teal: #00c2a8;
+    --teal2: #00968a;
+    --amber: #f5a623;
+    --lavender: #7b6fff;
+    --coral: #ff6b6b;
+    --surface: #f7f9fc;
+    --card: #ffffff;
+    --border: #e2e8f0;
+    --text: #374151;
+    --muted: #6b7280;
+    --radius: 16px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--surface);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* NAV */
+  nav {
+    background: var(--ink);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .nav-brand {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: var(--teal);
+    text-decoration: none;
+    letter-spacing: -0.5px;
+  }
+  .nav-brand span { color: #fff; }
+  .nav-links { display: flex; gap: 4px; }
+  .nav-links a {
+    color: rgba(255,255,255,0.7);
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 8px 14px;
+    border-radius: 8px;
+    transition: all 0.2s;
+  }
+  .nav-links a:hover, .nav-links a.active {
+    background: rgba(0,194,168,0.15);
+    color: var(--teal);
+  }
+  .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; }
+  .hamburger span { display: block; width: 22px; height: 2px; background: #fff; border-radius: 2px; transition: 0.3s; }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, var(--ink) 0%, var(--ink2) 60%, #1a2744 100%);
+    color: #fff;
+    padding: 80px 24px 96px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(0,194,168,0.18) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -100px; left: -60px;
+    width: 350px; height: 350px;
+    background: radial-gradient(circle, rgba(123,111,255,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .hero-badge {
+    display: inline-block;
+    background: rgba(0,194,168,0.2);
+    border: 1px solid rgba(0,194,168,0.4);
+    color: var(--teal);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border-radius: 999px;
+    margin-bottom: 24px;
+  }
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    line-height: 1.15;
+    margin-bottom: 20px;
+    letter-spacing: -1px;
+  }
+  .hero h1 .accent { color: var(--teal); }
+  .hero p {
+    font-size: clamp(0.95rem, 2vw, 1.15rem);
+    color: rgba(255,255,255,0.75);
+    max-width: 580px;
+    margin: 0 auto 40px;
+    line-height: 1.7;
+  }
+  .hero-cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--teal);
+    color: var(--ink);
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    padding: 14px 32px;
+    border-radius: 999px;
+    text-decoration: none;
+    transition: all 0.25s;
+    box-shadow: 0 4px 20px rgba(0,194,168,0.4);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,194,168,0.5); }
+  .btn-ghost {
+    color: #fff;
+    border: 1.5px solid rgba(255,255,255,0.25);
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 14px 32px;
+    border-radius: 999px;
+    text-decoration: none;
+    transition: all 0.25s;
+  }
+  .btn-ghost:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.5); }
+
+  /* STATS */
+  .stats-row {
+    display: flex;
+    gap: 0;
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .stat-item {
+    padding: 24px 40px;
+    text-align: center;
+    border-right: 1px solid var(--border);
+    flex: 1;
+    min-width: 140px;
+  }
+  .stat-item:last-child { border-right: none; }
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--teal);
+  }
+  .stat-label { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
+
+  /* MAIN CONTENT */
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+  section.main-section { padding: 60px 0; }
+  .section-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 8px;
+  }
+  .section-heading {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 800;
+    color: var(--ink);
+    margin-bottom: 12px;
+    letter-spacing: -0.5px;
+  }
+  .section-sub {
+    color: var(--muted);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    max-width: 560px;
+    margin-bottom: 40px;
+  }
+
+  /* UNIT CARDS */
+  .units-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+  }
+  .unit-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+  .unit-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--accent, var(--teal));
+  }
+  .unit-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.08);
+    border-color: var(--accent, var(--teal));
+  }
+  .unit-number {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .unit-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 10px;
+    line-height: 1.3;
+  }
+  .unit-chapters {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .unit-arrow {
+    position: absolute;
+    bottom: 20px; right: 24px;
+    font-size: 1.2rem;
+    opacity: 0.3;
+    transition: 0.2s;
+  }
+  .unit-card:hover .unit-arrow { opacity: 1; transform: translateX(4px); }
+
+  /* QUICK ACCESS TILES */
+  .quick-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+  }
+  .quick-tile {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px 24px;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    transition: all 0.25s;
+  }
+  .quick-tile:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.07);
+  }
+  .tile-icon {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+  }
+  .tile-label {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--ink);
+    margin-bottom: 2px;
+  }
+  .tile-sub { font-size: 0.78rem; color: var(--muted); }
+
+  /* TIPS */
+  .tips-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+  }
+  .tip-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+  }
+  .tip-icon { font-size: 1.6rem; margin-bottom: 12px; }
+  .tip-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .tip-text { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+
+  /* FOOTER */
+  footer {
+    background: var(--ink);
+    color: rgba(255,255,255,0.5);
+    text-align: center;
+    padding: 32px 24px;
+    font-size: 0.82rem;
+  }
+  footer a { color: var(--teal); text-decoration: none; }
+
+  @media (max-width: 640px) {
+    .hamburger { display: flex; }
+    .nav-links {
+      display: none;
+      position: fixed;
+      top: 64px; left: 0; right: 0;
+      background: var(--ink2);
+      flex-direction: column;
+      padding: 16px;
+      gap: 4px;
+      z-index: 99;
+    }
+    .nav-links.open { display: flex; }
+    .nav-links a { padding: 12px 16px; font-size: 1rem; }
+    .stat-item { padding: 18px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-brand">Digital<span>Lit</span></a>
+  <div class="nav-links" id="navLinks">
+    <a href="index.html" class="active">Home</a>
+    <a href="study-guide.html">Study Guide</a>
+    <a href="flashcards.html">Flashcards</a>
+    <a href="search.html">Search</a>
+    <a href="practice-test.html">Practice Test</a>
+  </div>
+  <div class="hamburger" id="hamburger" onclick="toggleNav()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-badge">CCSLC Digital Literacy</div>
+  <h1>Master Digital Literacy<br>with <span class="accent">Confidence</span></h1>
+  <p>Your complete study hub for the CCSLC Digital Literacy course. Explore all 15 chapters, practice with flashcards, and test your knowledge.</p>
+  <div class="hero-cta">
+    <a href="study-guide.html" class="btn-primary">Start Studying →</a>
+    <a href="practice-test.html" class="btn-ghost">Take Practice Test</a>
+  </div>
+</div>
+
+<div class="stats-row">
+  <div class="stat-item"><div class="stat-num">15</div><div class="stat-label">Chapters</div></div>
+  <div class="stat-item"><div class="stat-num">6</div><div class="stat-label">Units</div></div>
+  <div class="stat-item"><div class="stat-num">60+</div><div class="stat-label">Flashcards</div></div>
+  <div class="stat-item"><div class="stat-num">30</div><div class="stat-label">Practice Questions</div></div>
+</div>
+
+<div class="container">
+  <section class="main-section">
+    <div class="section-label">Course Units</div>
+    <div class="section-heading">Browse by Unit</div>
+    <div class="section-sub">Six comprehensive units covering everything you need to know for your CCSLC Digital Literacy examination.</div>
+    <div class="units-grid">
+      <a href="study-guide.html#unit1" class="unit-card" style="--accent:#00c2a8">
+        <div class="unit-number">Unit 1</div>
+        <div class="unit-title">Foundations of Digital Literacy</div>
+        <div class="unit-chapters">Ch 1–4 · Digital literacy, hardware &amp; software, apps &amp; cloud</div>
+        <div class="unit-arrow">→</div>
+      </a>
+      <a href="study-guide.html#unit2" class="unit-card" style="--accent:#7b6fff">
+        <div class="unit-number">Unit 2</div>
+        <div class="unit-title">Online Communication &amp; Collaboration</div>
+        <div class="unit-chapters">Ch 5, 9 · Web 2.0, email, sync &amp; async communication</div>
+        <div class="unit-arrow">→</div>
+      </a>
+      <a href="study-guide.html#unit3" class="unit-card" style="--accent:#f5a623">
+        <div class="unit-number">Unit 3</div>
+        <div class="unit-title">Digital Citizenship &amp; Online Safety</div>
+        <div class="unit-chapters">Ch 6–8 · Netiquette, cyberbullying, phishing, copyright</div>
+        <div class="unit-arrow">→</div>
+      </a>
+      <a href="study-guide.html#unit4" class="unit-card" style="--accent:#ff6b6b">
+        <div class="unit-number">Unit 4</div>
+        <div class="unit-title">Websites, E-Commerce &amp; Digital World</div>
+        <div class="unit-chapters">Ch 10–12 · Web design, e-commerce, digital economy</div>
+        <div class="unit-arrow">→</div>
+      </a>
+      <a href="study-guide.html#unit5" class="unit-card" style="--accent:#34d399">
+        <div class="unit-number">Unit 5</div>
+        <div class="unit-title">Emerging Technology &amp; Wellness</div>
+        <div class="unit-chapters">Ch 13–14 · VR, AI, health &amp; digital wellness</div>
+        <div class="unit-arrow">→</div>
+      </a>
+      <a href="study-guide.html#unit6" class="unit-card" style="--accent:#f472b6">
+        <div class="unit-number">Unit 6</div>
+        <div class="unit-title">Examination Preparation</div>
+        <div class="unit-chapters">Ch 15 · Practice activities, review questions &amp; glossary</div>
+        <div class="unit-arrow">→</div>
+      </a>
+    </div>
+  </section>
+
+  <section class="main-section" style="padding-top:0">
+    <div class="section-label">Quick Access</div>
+    <div class="section-heading">Study Tools</div>
+    <div class="section-sub">Jump straight to the tool that helps you most.</div>
+    <div class="quick-grid">
+      <a href="study-guide.html" class="quick-tile">
+        <div class="tile-icon" style="background:#e6faf8;">📖</div>
+        <div>
+          <div class="tile-label">Study Guide</div>
+          <div class="tile-sub">All chapters with full notes</div>
+        </div>
+      </a>
+      <a href="flashcards.html" class="quick-tile">
+        <div class="tile-icon" style="background:#ede9ff;">🃏</div>
+        <div>
+          <div class="tile-label">Flashcards</div>
+          <div class="tile-sub">Flip cards per chapter</div>
+        </div>
+      </a>
+      <a href="search.html" class="quick-tile">
+        <div class="tile-icon" style="background:#fef3e2;">🔍</div>
+        <div>
+          <div class="tile-label">Search Terms</div>
+          <div class="tile-sub">Find any topic instantly</div>
+        </div>
+      </a>
+      <a href="practice-test.html" class="quick-tile">
+        <div class="tile-icon" style="background:#fde8e8;">✏️</div>
+        <div>
+          <div class="tile-label">Practice Test</div>
+          <div class="tile-sub">30 multiple choice questions</div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <section class="main-section" style="padding-top:0">
+    <div class="section-label">Study Tips</div>
+    <div class="section-heading">How to Use This Site</div>
+    <div class="tips-grid">
+      <div class="tip-card">
+        <div class="tip-icon">📚</div>
+        <div class="tip-title">Read the Study Guide First</div>
+        <div class="tip-text">Start with the Study Guide to understand all concepts before testing yourself.</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">🃏</div>
+        <div class="tip-title">Practice with Flashcards</div>
+        <div class="tip-text">Use flashcards to memorise key terms and definitions for each chapter.</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">🔍</div>
+        <div class="tip-title">Search Unknown Terms</div>
+        <div class="tip-text">If you encounter a term you don't know, use the Search page to find it instantly.</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">📝</div>
+        <div class="tip-title">Take the Practice Test</div>
+        <div class="tip-text">Test yourself with 30 multiple choice questions covering all units.</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <p>CCSLC Digital Literacy Study Hub &nbsp;·&nbsp; <a href="study-guide.html">Study Guide</a> &nbsp;·&nbsp; <a href="flashcards.html">Flashcards</a> &nbsp;·&nbsp; <a href="search.html">Search</a> &nbsp;·&nbsp; <a href="practice-test.html">Practice Test</a></p>
+</footer>
+
+<script>
+  function toggleNav() {
+    document.getElementById('navLinks').classList.toggle('open');
+  }
+</script>
+</body>
+</html>

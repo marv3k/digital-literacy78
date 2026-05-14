@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Practice Test | Digital Literacy CCSLC</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:#0d1117;--ink2:#1e2633;--teal:#00c2a8;--teal2:#00968a;
+    --amber:#f5a623;--lavender:#7b6fff;--coral:#ff6b6b;--green:#34d399;--pink:#f472b6;
+    --surface:#f7f9fc;--card:#fff;--border:#e2e8f0;--text:#374151;--muted:#6b7280;
+    --radius:16px;
+    --correct:#10b981;--wrong:#ef4444;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--text);min-height:100vh;}
+
+  nav{background:var(--ink);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:100;}
+  .nav-brand{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:var(--teal);text-decoration:none;}
+  .nav-brand span{color:#fff;}
+  .nav-links{display:flex;gap:4px;}
+  .nav-links a{color:rgba(255,255,255,0.7);text-decoration:none;font-size:0.875rem;font-weight:500;padding:8px 14px;border-radius:8px;transition:all 0.2s;}
+  .nav-links a:hover,.nav-links a.active{background:rgba(0,194,168,0.15);color:var(--teal);}
+  .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;}
+  .hamburger span{display:block;width:22px;height:2px;background:#fff;border-radius:2px;}
+
+  .page-header{background:linear-gradient(135deg,var(--ink) 0%,var(--ink2) 100%);padding:48px 24px 56px;color:#fff;text-align:center;}
+  .page-header h1{font-family:'Syne',sans-serif;font-size:clamp(1.6rem,4vw,2.6rem);font-weight:800;letter-spacing:-0.5px;margin-bottom:10px;}
+  .page-header p{color:rgba(255,255,255,0.6);font-size:0.95rem;}
+
+  /* PROGRESS BAR */
+  .test-progress-wrap{background:var(--card);border-bottom:1px solid var(--border);padding:16px 24px;position:sticky;top:64px;z-index:50;}
+  .test-progress-inner{max-width:860px;margin:0 auto;display:flex;align-items:center;gap:16px;}
+  .progress-text{font-family:'Syne',sans-serif;font-weight:700;font-size:0.85rem;color:var(--ink);white-space:nowrap;}
+  .progress-track{flex:1;background:var(--border);border-radius:999px;height:8px;}
+  .progress-fill{height:100%;border-radius:999px;background:var(--teal);transition:width 0.4s ease;}
+  .score-badge{font-family:'Syne',sans-serif;font-weight:700;font-size:0.85rem;padding:6px 14px;border-radius:999px;background:var(--surface);border:1px solid var(--border);white-space:nowrap;}
+
+  .container{max-width:860px;margin:0 auto;padding:24px 24px 80px;}
+
+  /* INTRO CARD */
+  .intro-card{
+    background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+    padding:32px;margin-bottom:32px;display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;
+  }
+  .intro-icon{font-size:3rem;flex-shrink:0;}
+  .intro-title{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;color:var(--ink);margin-bottom:8px;}
+  .intro-meta{display:flex;gap:16px;flex-wrap:wrap;margin-top:12px;}
+  .meta-pill{
+    font-size:0.78rem;font-weight:600;padding:5px 14px;border-radius:999px;
+    background:var(--surface);border:1px solid var(--border);color:var(--muted);
+  }
+
+  /* SECTION DIVIDER */
+  .section-divider{
+    display:flex;align-items:center;gap:14px;margin:32px 0 20px;
+  }
+  .section-label-pill{
+    font-family:'Syne',sans-serif;font-size:0.7rem;font-weight:700;
+    letter-spacing:1.5px;text-transform:uppercase;padding:5px 14px;
+    border-radius:999px;white-space:nowrap;
+  }
+  .divider-line{flex:1;height:1px;background:var(--border);}
+
+  /* QUESTION CARD */
+  .q-card{
+    background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius);
+    margin-bottom:18px;overflow:hidden;transition:border-color 0.3s;
+  }
+  .q-card.answered-correct{border-color:var(--correct);}
+  .q-card.answered-wrong{border-color:var(--wrong);}
+
+  .q-header{
+    display:flex;align-items:flex-start;gap:14px;
+    padding:20px 24px;background:var(--surface);border-bottom:1px solid var(--border);
+  }
+  .q-number{
+    width:32px;height:32px;border-radius:8px;background:var(--ink);color:#fff;
+    font-family:'Syne',sans-serif;font-weight:800;font-size:0.8rem;
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;
+  }
+  .q-text{font-size:0.95rem;font-weight:500;line-height:1.6;color:var(--ink);}
+  .q-unit{font-size:0.72rem;color:var(--muted);margin-top:4px;}
+
+  /* OPTIONS */
+  .q-options{padding:16px 24px 20px;display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  @media(max-width:540px){.q-options{grid-template-columns:1fr;}}
+
+  .option-btn{
+    display:flex;align-items:center;gap:12px;
+    padding:12px 16px;border-radius:10px;border:1.5px solid var(--border);
+    background:var(--card);cursor:pointer;transition:all 0.2s;
+    text-align:left;font-family:'DM Sans',sans-serif;font-size:0.88rem;
+    color:var(--text);
+  }
+  .option-btn:hover:not(:disabled){border-color:var(--teal);background:rgba(0,194,168,0.05);color:var(--ink);}
+  .option-btn:disabled{cursor:default;}
+  .option-btn.selected{border-color:var(--teal);background:rgba(0,194,168,0.08);}
+  .option-btn.correct{border-color:var(--correct);background:rgba(16,185,129,0.1);color:var(--correct);}
+  .option-btn.wrong{border-color:var(--wrong);background:rgba(239,68,68,0.08);color:var(--wrong);}
+  .option-btn.reveal-correct{border-color:var(--correct);background:rgba(16,185,129,0.06);color:var(--correct);}
+
+  .option-letter{
+    width:26px;height:26px;border-radius:6px;border:1.5px solid currentColor;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Syne',sans-serif;font-weight:700;font-size:0.7rem;
+    flex-shrink:0;opacity:0.6;
+  }
+  .option-btn.correct .option-letter,.option-btn.reveal-correct .option-letter{opacity:1;background:rgba(16,185,129,0.2);}
+  .option-btn.wrong .option-letter{opacity:1;background:rgba(239,68,68,0.15);}
+
+  /* FEEDBACK */
+  .q-feedback{
+    padding:14px 24px;font-size:0.85rem;line-height:1.6;
+    display:none;border-top:1px solid var(--border);
+  }
+  .q-feedback.show{display:block;}
+  .q-feedback.correct-fb{background:rgba(16,185,129,0.07);color:#065f46;}
+  .q-feedback.wrong-fb{background:rgba(239,68,68,0.06);color:#7f1d1d;}
+  .q-feedback strong{font-weight:700;}
+
+  /* RESULTS PANEL */
+  #resultPanel{
+    display:none;background:var(--card);border:1px solid var(--border);
+    border-radius:var(--radius);padding:40px;text-align:center;margin-top:32px;
+  }
+  #resultPanel.show{display:block;}
+  .result-emoji{font-size:4rem;margin-bottom:16px;}
+  .result-grade{font-family:'Syne',sans-serif;font-size:3rem;font-weight:800;margin-bottom:8px;}
+  .result-label{font-size:1.1rem;color:var(--muted);margin-bottom:24px;}
+  .result-stats{display:flex;gap:0;justify-content:center;flex-wrap:wrap;margin-bottom:32px;border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+  .result-stat{flex:1;min-width:100px;padding:20px 16px;border-right:1px solid var(--border);text-align:center;}
+  .result-stat:last-child{border-right:none;}
+  .stat-n{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;}
+  .stat-l{font-size:0.78rem;color:var(--muted);}
+  .result-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+  .btn{padding:12px 28px;border-radius:999px;border:none;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;font-size:0.875rem;transition:all 0.2s;}
+  .btn-primary{background:var(--teal);color:var(--ink);}
+  .btn-primary:hover{background:var(--teal2);transform:translateY(-1px);}
+  .btn-outline{background:var(--card);border:1.5px solid var(--border);color:var(--ink);}
+  .btn-outline:hover{border-color:var(--teal);color:var(--teal);}
+
+  /* SUBMIT ROW */
+  .submit-row{text-align:center;margin-top:32px;}
+  .submit-btn{
+    padding:16px 48px;border-radius:999px;border:none;cursor:pointer;
+    font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;
+    background:var(--ink);color:#fff;transition:all 0.25s;
+    box-shadow:0 4px 20px rgba(0,0,0,0.15);
+  }
+  .submit-btn:hover{background:var(--teal);color:var(--ink);transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,194,168,0.3);}
+  .submit-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none;}
+
+  .answered-count{font-size:0.85rem;color:var(--muted);margin-top:12px;}
+
+  @media(max-width:640px){
+    .hamburger{display:flex;}
+    .nav-links{display:none;position:fixed;top:64px;left:0;right:0;background:var(--ink2);flex-direction:column;padding:16px;gap:4px;z-index:99;}
+    .nav-links.open{display:flex;}
+    .nav-links a{padding:12px 16px;font-size:1rem;}
+    .intro-card{flex-direction:column;}
+    .result-stat{padding:14px 10px;}
+  }
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-brand">Digital<span>Lit</span></a>
+  <div class="nav-links" id="navLinks">
+    <a href="index.html">Home</a>
+    <a href="study-guide.html">Study Guide</a>
+    <a href="flashcards.html">Flashcards</a>
+    <a href="search.html">Search</a>
+    <a href="practice-test.html" class="active">Practice Test</a>
+  </div>
+  <div class="hamburger" onclick="toggleNav()"><span></span><span></span><span></span></div>
+</nav>
+
+<div class="page-header">
+  <h1>✏️ Practice Test</h1>
+  <p>30 multiple choice questions covering all 6 units. Select an answer to get instant feedback.</p>
+</div>
+
+<div class="test-progress-wrap">
+  <div class="test-progress-inner">
+    <span class="progress-text" id="progressText">0 / 30</span>
+    <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    <span class="score-badge" id="scoreBadge">Score: 0</span>
+  </div>
+</div>
+
+<div class="container">
+  <div class="intro-card">
+    <div class="intro-icon">📝</div>
+    <div>
+      <div class="intro-title">CCSLC Digital Literacy — Full Practice Test</div>
+      <p style="font-size:0.9rem;color:var(--muted);line-height:1.6;">Select the best answer for each question. You'll get instant feedback with an explanation after each answer. When done, submit to see your full score and grade.</p>
+      <div class="intro-meta">
+        <span class="meta-pill">📋 30 Questions</span>
+        <span class="meta-pill">🎯 All 6 Units</span>
+        <span class="meta-pill">⚡ Instant Feedback</span>
+        <span class="meta-pill">📊 Graded Results</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="questionsContainer"></div>
+
+  <div class="submit-row">
+    <button class="submit-btn" id="submitBtn" onclick="submitTest()" disabled>Submit Test</button>
+    <div class="answered-count" id="answeredCount">Answer all 30 questions to submit</div>
+  </div>
+
+  <div id="resultPanel">
+    <div class="result-emoji" id="resultEmoji">🎉</div>
+    <div class="result-grade" id="resultGrade"></div>
+    <div class="result-label" id="resultLabel"></div>
+    <div class="result-stats">
+      <div class="result-stat"><div class="stat-n" id="statCorrect" style="color:var(--correct)"></div><div class="stat-l">Correct</div></div>
+      <div class="result-stat"><div class="stat-n" id="statWrong" style="color:var(--wrong)"></div><div class="stat-l">Wrong</div></div>
+      <div class="result-stat"><div class="stat-n" id="statPct" style="color:var(--teal)"></div><div class="stat-l">Score %</div></div>
+    </div>
+    <div class="result-actions">
+      <button class="btn btn-primary" onclick="resetTest()">🔄 Retake Test</button>
+      <button class="btn btn-outline" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Review Answers</button>
+      <a href="study-guide.html" class="btn btn-outline">📖 Study Guide</a>
+    </div>
+  </div>
+</div>
+
+<script>
+const QUESTIONS = [
+  // UNIT 1 — Foundations
+  {
+    unit:"Unit 1 — Foundations",
+    q:"What is digital literacy?",
+    opts:["The ability to repair computers","The ability to use digital technologies effectively, responsibly, and safely","The study of computer hardware","The ability to write computer programs"],
+    ans:1,
+    exp:"Digital literacy is the ability to use digital technologies effectively, responsibly, and safely — including locating information, communicating digitally, and evaluating information critically."
+  },
+  {
+    unit:"Unit 1 — Foundations",
+    q:"Which of the following is an example of digital media?",
+    opts:["A printed textbook","A keyboard","A podcast","A computer mouse"],
+    ans:2,
+    exp:"Podcasts are digital media — content created and shared digitally. Other examples include videos, images, websites, and social media posts."
+  },
+  {
+    unit:"Unit 1 — Foundations",
+    q:"Which of the following best describes hardware?",
+    opts:["Programs that run on a computer","Physical components of a computer that can be seen and touched","Online storage services","Instructions that tell a device what to do"],
+    ans:1,
+    exp:"Hardware refers to the physical components of a computer — the parts you can see and touch, such as keyboards, monitors, and CPUs."
+  },
+  {
+    unit:"Unit 1 — Foundations",
+    q:"Which of the following is an input device?",
+    opts:["Monitor","Printer","Speaker","Scanner"],
+    ans:3,
+    exp:"A scanner is an input device — it enters data into a computer. Monitors, printers, and speakers are output devices."
+  },
+  {
+    unit:"Unit 1 — Foundations",
+    q:"Which of the following is an example of system software?",
+    opts:["Microsoft Word","Google Docs","Windows","Canva"],
+    ans:2,
+    exp:"Windows is system software — it manages the computer's operations. Microsoft Word, Google Docs, and Canva are application software."
+  },
+  {
+    unit:"Unit 1 — Foundations",
+    q:"Which of the following is an example of application software?",
+    opts:["iOS","Android","macOS","Microsoft Word"],
+    ans:3,
+    exp:"Microsoft Word is application software designed for creating documents. iOS, Android, and macOS are system software that manage device operations."
+  },
+  {
+    unit:"Unit 1 — Foundations",
+    q:"What is cloud computing?",
+    opts:["Software installed on a local hard drive","Online storage and services accessed through the internet","A type of hardware device","The process of coding computer programs"],
+    ans:1,
+    exp:"Cloud computing refers to online storage and services accessed through the internet — for example Google Drive, OneDrive, and Dropbox."
+  },
+  {
+    unit:"Unit 1 — Foundations",
+    q:"Which of the following is a disadvantage of wireless technology?",
+    opts:["Portability","Convenience","Security risks","Mobility"],
+    ans:2,
+    exp:"Wireless technology has the disadvantage of security risks — networks can be intercepted. Portability, convenience, and mobility are advantages."
+  },
+  // UNIT 2 — Communication & Collaboration
+  {
+    unit:"Unit 2 — Communication & Collaboration",
+    q:"Which of the following is an example of synchronous communication?",
+    opts:["Email","Discussion board post","Recorded video","Video call"],
+    ans:3,
+    exp:"A video call is synchronous — it happens in real time. Email, discussion boards, and recorded videos are asynchronous (not real time)."
+  },
+  {
+    unit:"Unit 2 — Communication & Collaboration",
+    q:"Which of the following best describes asynchronous communication?",
+    opts:["Communication that occurs in real time","Communication where both parties type at the same time","Communication that does not happen in real time","Communication using only telephone calls"],
+    ans:2,
+    exp:"Asynchronous communication does not happen in real time — the message is sent and the reply may come later, such as in email or discussion boards."
+  },
+  {
+    unit:"Unit 2 — Communication & Collaboration",
+    q:"How does email differ from live chat?",
+    opts:["Email is informal; live chat is formal","Email is synchronous; live chat is asynchronous","Email is formal and asynchronous; live chat is informal and synchronous","Email uses video; live chat uses audio"],
+    ans:2,
+    exp:"Email is formal and asynchronous (not real time); live chat is informal and synchronous (real time instant messaging)."
+  },
+  {
+    unit:"Unit 2 — Communication & Collaboration",
+    q:"Which of the following is a collaborative digital tool?",
+    opts:["Audacity","Google Docs","CapCut","Canva"],
+    ans:1,
+    exp:"Google Docs is a collaborative tool that allows multiple users to work on the same document simultaneously. Audacity, CapCut, and Canva are primarily individual multimedia production tools."
+  },
+  {
+    unit:"Unit 2 — Communication & Collaboration",
+    q:"What does Web 2.0 refer to?",
+    opts:["The second version of a web browser","Interactive websites where users can create and share content","Websites that only display text","Websites that require a subscription"],
+    ans:1,
+    exp:"Web 2.0 refers to interactive websites and platforms where users can create and share content — examples include YouTube, TikTok, and Wikipedia."
+  },
+  // UNIT 3 — Digital Citizenship & Safety
+  {
+    unit:"Unit 3 — Digital Citizenship & Safety",
+    q:"What is a digital footprint?",
+    opts:["A password used to log into websites","The trail of information left online through activities such as posting, browsing, and sharing","The physical size of a digital device","A type of computer virus"],
+    ans:1,
+    exp:"A digital footprint is the trail of information left online through activities such as posting, commenting, browsing, searching, and sharing content."
+  },
+  {
+    unit:"Unit 3 — Digital Citizenship & Safety",
+    q:"Which of the following is an example of a passive digital footprint?",
+    opts:["Posting a photo on social media","Writing a comment on a website","Cookies and browsing history collected automatically","Uploading a video to YouTube"],
+    ans:2,
+    exp:"A passive digital footprint is information collected without direct user input — such as cookies, browsing history, and location tracking. Posts, comments, and uploads are active footprints."
+  },
+  {
+    unit:"Unit 3 — Digital Citizenship & Safety",
+    q:"What is netiquette?",
+    opts:["A type of internet security software","Proper online behaviour and etiquette","The speed of an internet connection","A tool for creating web pages"],
+    ans:1,
+    exp:"Netiquette refers to proper online behaviour — for example using respectful language, not typing in ALL CAPS, and responding politely to others."
+  },
+  {
+    unit:"Unit 3 — Digital Citizenship & Safety",
+    q:"Which of the following is NOT a sign of a phishing attack?",
+    opts:["Suspicious links","Requests for passwords","A message from a trusted friend asking how you are","Urgent messages with poor grammar"],
+    ans:2,
+    exp:"A casual personal message is not a sign of phishing. Phishing signs include suspicious links, requests for passwords, poor spelling and grammar, and urgent messages creating pressure."
+  },
+  {
+    unit:"Unit 3 — Digital Citizenship & Safety",
+    q:"What is cyberbullying?",
+    opts:["A type of antivirus software","Bullying that takes place using digital technology","Sending large files over the internet","Hacking into someone's computer"],
+    ans:1,
+    exp:"Cyberbullying is bullying that takes place online — for example sending hurtful messages, sharing embarrassing photos, or spreading rumours."
+  },
+  {
+    unit:"Unit 3 — Digital Citizenship & Safety",
+    q:"What is piracy in the context of digital content?",
+    opts:["Using the internet without permission","The illegal copying or distribution of copyrighted material","Creating a new social media account","Citing sources in a document"],
+    ans:1,
+    exp:"Piracy is the illegal copying or distribution of copyrighted material — such as downloading movies illegally or sharing copyrighted music without authorisation."
+  },
+  {
+    unit:"Unit 3 — Digital Citizenship & Safety",
+    q:"How can someone avoid plagiarism?",
+    opts:["Copy and paste information directly from websites","Submit another person's work with a different name","Cite sources properly and paraphrase information correctly","Use as much text as possible from original sources"],
+    ans:2,
+    exp:"Plagiarism is avoided by citing sources properly, using quotation marks for direct quotes, and paraphrasing information correctly."
+  },
+  {
+    unit:"Unit 3 — Digital Citizenship & Safety",
+    q:"Which of the following best helps you stay safe from cybercrime?",
+    opts:["Using the same password for all accounts","Sharing your password with close friends","Enabling two-factor authentication","Opening every email attachment received"],
+    ans:2,
+    exp:"Enabling two-factor authentication adds an extra layer of security, making it much harder for criminals to access your accounts even if they have your password."
+  },
+  // UNIT 4 — Websites & E-Commerce
+  {
+    unit:"Unit 4 — Websites, E-Commerce & Digital World",
+    q:"What is e-commerce?",
+    opts:["The study of computers in business","Buying and selling goods and services online","Sending emails for business purposes","Building websites for companies"],
+    ans:1,
+    exp:"E-commerce refers to buying and selling goods and services online using digital platforms — such as Amazon, eBay, and Etsy."
+  },
+  {
+    unit:"Unit 4 — Websites, E-Commerce & Digital World",
+    q:"What does B2C mean in e-commerce?",
+    opts:["Businesses to Computers","Buying to Consuming","Business to Consumer","Browser to Customer"],
+    ans:2,
+    exp:"B2C stands for Business to Consumer — businesses selling products or services directly to customers online."
+  },
+  {
+    unit:"Unit 4 — Websites, E-Commerce & Digital World",
+    q:"Which of the following is a safe online shopping tip?",
+    opts:["Use public Wi-Fi to make purchases","Always check for secure payment symbols on the website","Share your bank details by email to confirm orders","Purchase from any website to get the best price"],
+    ans:1,
+    exp:"Checking for secure payment symbols (like HTTPS and padlock icons) helps verify a website is legitimate and safe for transactions."
+  },
+  {
+    unit:"Unit 4 — Websites, E-Commerce & Digital World",
+    q:"Which factor is important when building a website?",
+    opts:["Making sure the website is only accessible on desktop computers","Ignoring the target audience","Considering audience, purpose, design, and accessibility","Using as many colours as possible"],
+    ans:2,
+    exp:"Key factors when building a website include audience, purpose, design, accessibility, and content — ensuring the site meets the needs of its users."
+  },
+  {
+    unit:"Unit 4 — Websites, E-Commerce & Digital World",
+    q:"Which of the following is a digital tool used in healthcare?",
+    opts:["Spreadsheet software","Telemedicine","E-commerce platforms","Social media marketing"],
+    ans:1,
+    exp:"Telemedicine is the delivery of healthcare services via digital technology — such as online doctor appointments, digital health records, and remote monitoring."
+  },
+  // UNIT 5 — Emerging Technology & Wellness
+  {
+    unit:"Unit 5 — Emerging Technology & Wellness",
+    q:"What is virtual reality (VR)?",
+    opts:["A type of social media platform","Technology that creates a simulated digital environment","A software program for editing videos","A method of online shopping"],
+    ans:1,
+    exp:"Virtual reality (VR) is technology that creates a simulated digital environment that users can interact with — used in gaming, education, healthcare training, and tourism."
+  },
+  {
+    unit:"Unit 5 — Emerging Technology & Wellness",
+    q:"Which of the following is a use of virtual reality?",
+    opts:["Sending emails","Writing spreadsheets","Healthcare training simulations","Browsing the internet"],
+    ans:2,
+    exp:"Healthcare training is a major use of VR — medical students can practise surgeries safely in simulated environments before working with real patients."
+  },
+  {
+    unit:"Unit 5 — Emerging Technology & Wellness",
+    q:"What does the 20-20-20 rule help with?",
+    opts:["Time management for school assignments","Reducing eye strain from screen use","Setting strong passwords","Organising digital files"],
+    ans:1,
+    exp:"The 20-20-20 rule helps reduce eye strain: every 20 minutes, look at something 20 feet away for 20 seconds."
+  },
+  {
+    unit:"Unit 5 — Emerging Technology & Wellness",
+    q:"Which of the following is a negative effect of excessive screen time?",
+    opts:["Improved physical fitness","Increased creativity","Eye strain and poor posture","Stronger social relationships"],
+    ans:2,
+    exp:"Excessive screen time can cause eye strain (headaches, blurred vision), poor posture, sleep problems, and mental health concerns like anxiety."
+  },
+];
+
+let answers = new Array(QUESTIONS.length).fill(null);
+let submitted = false;
+
+function renderQuestions() {
+  const container = document.getElementById('questionsContainer');
+  const units = [...new Set(QUESTIONS.map(q => q.unit))];
+  const unitColors = {
+    'Unit 1 — Foundations':'var(--teal)',
+    'Unit 2 — Communication & Collaboration':'var(--lavender)',
+    'Unit 3 — Digital Citizenship & Safety':'var(--amber)',
+    'Unit 4 — Websites, E-Commerce & Digital World':'var(--coral)',
+    'Unit 5 — Emerging Technology & Wellness':'var(--green)',
+  };
+
+  let html = '';
+  let currentUnit = '';
+  let qNum = 0;
+
+  QUESTIONS.forEach((q, qi) => {
+    if (q.unit !== currentUnit) {
+      currentUnit = q.unit;
+      const color = unitColors[currentUnit] || 'var(--teal)';
+      html += `<div class="section-divider"><span class="section-label-pill" style="background:${color}22;color:${color};">${currentUnit}</span><div class="divider-line"></div></div>`;
+    }
+    qNum++;
+    html += `
+      <div class="q-card" id="qcard-${qi}">
+        <div class="q-header">
+          <div class="q-number">${qNum}</div>
+          <div>
+            <div class="q-text">${q.q}</div>
+            <div class="q-unit">${q.unit}</div>
+          </div>
+        </div>
+        <div class="q-options">
+          ${q.opts.map((opt, oi) => `
+            <button class="option-btn" id="opt-${qi}-${oi}" onclick="selectAnswer(${qi},${oi})">
+              <span class="option-letter">${String.fromCharCode(65+oi)}</span>
+              ${opt}
+            </button>
+          `).join('')}
+        </div>
+        <div class="q-feedback" id="feedback-${qi}"></div>
+      </div>`;
+  });
+
+  container.innerHTML = html;
+}
+
+function selectAnswer(qi, oi) {
+  if (submitted || answers[qi] !== null) return;
+  answers[qi] = oi;
+
+  const q = QUESTIONS[qi];
+  const isCorrect = oi === q.ans;
+  const card = document.getElementById(`qcard-${qi}`);
+  const feedback = document.getElementById(`feedback-${qi}`);
+
+  // Style all options
+  q.opts.forEach((_, optIdx) => {
+    const btn = document.getElementById(`opt-${qi}-${optIdx}`);
+    btn.disabled = true;
+    if (optIdx === q.ans) btn.classList.add('reveal-correct');
+    if (optIdx === oi && !isCorrect) btn.classList.add('wrong');
+    if (optIdx === oi && isCorrect) btn.classList.remove('reveal-correct'), btn.classList.add('correct');
+  });
+
+  card.classList.add(isCorrect ? 'answered-correct' : 'answered-wrong');
+  feedback.className = `q-feedback show ${isCorrect ? 'correct-fb' : 'wrong-fb'}`;
+  feedback.innerHTML = isCorrect
+    ? `✅ <strong>Correct!</strong> ${q.exp}`
+    : `❌ <strong>Incorrect.</strong> The correct answer is <strong>${q.opts[q.ans]}</strong>. ${q.exp}`;
+
+  updateProgress();
+}
+
+function updateProgress() {
+  const answered = answers.filter(a => a !== null).length;
+  const correct = answers.reduce((sum, a, i) => a === QUESTIONS[i].ans ? sum+1 : sum, 0);
+  const pct = Math.round(answered / QUESTIONS.length * 100);
+
+  document.getElementById('progressText').textContent = `${answered} / ${QUESTIONS.length}`;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('scoreBadge').textContent = `Score: ${correct}`;
+
+  const remaining = QUESTIONS.length - answered;
+  if (remaining === 0) {
+    document.getElementById('answeredCount').textContent = 'All questions answered — ready to submit!';
+    document.getElementById('submitBtn').disabled = false;
+  } else {
+    document.getElementById('answeredCount').textContent = `${remaining} question${remaining!==1?'s':''} remaining`;
+  }
+}
+
+function submitTest() {
+  submitted = true;
+  document.getElementById('submitBtn').disabled = true;
+  document.getElementById('submitBtn').textContent = 'Submitted ✓';
+
+  const correct = answers.reduce((sum, a, i) => a === QUESTIONS[i].ans ? sum+1 : sum, 0);
+  const total = QUESTIONS.length;
+  const pct = Math.round(correct / total * 100);
+
+  let emoji, grade, label;
+  if (pct >= 90) { emoji='🏆'; grade=`${pct}%`; label='Excellent — Outstanding performance!'; }
+  else if (pct >= 75) { emoji='🎉'; grade=`${pct}%`; label='Great — Keep it up!'; }
+  else if (pct >= 60) { emoji='👍'; grade=`${pct}%`; label='Good — A little more revision will help.'; }
+  else if (pct >= 50) { emoji='📚'; grade=`${pct}%`; label='Keep studying — You can improve!'; }
+  else { emoji='💪'; grade=`${pct}%`; label='Keep practising — Review the study guide!'; }
+
+  document.getElementById('resultEmoji').textContent = emoji;
+  document.getElementById('resultGrade').textContent = grade;
+  document.getElementById('resultGrade').style.color = pct >= 75 ? 'var(--correct)' : pct >= 50 ? 'var(--amber)' : 'var(--wrong)';
+  document.getElementById('resultLabel').textContent = label;
+  document.getElementById('statCorrect').textContent = correct;
+  document.getElementById('statWrong').textContent = total - correct;
+  document.getElementById('statPct').textContent = pct + '%';
+
+  const panel = document.getElementById('resultPanel');
+  panel.classList.add('show');
+  setTimeout(() => panel.scrollIntoView({behavior:'smooth', block:'center'}), 100);
+}
+
+function resetTest() {
+  answers = new Array(QUESTIONS.length).fill(null);
+  submitted = false;
+  document.getElementById('submitBtn').disabled = true;
+  document.getElementById('submitBtn').textContent = 'Submit Test';
+  document.getElementById('answeredCount').textContent = 'Answer all 30 questions to submit';
+  document.getElementById('resultPanel').classList.remove('show');
+  document.getElementById('progressText').textContent = '0 / 30';
+  document.getElementById('progressFill').style.width = '0%';
+  document.getElementById('scoreBadge').textContent = 'Score: 0';
+  renderQuestions();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function toggleNav() { document.getElementById('navLinks').classList.toggle('open'); }
+
+renderQuestions();
+</script>
+</body>
+</html>

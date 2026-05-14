@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Study Guide | Digital Literacy CCSLC</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0d1117; --ink2: #1e2633; --teal: #00c2a8; --teal2: #00968a;
+    --amber: #f5a623; --lavender: #7b6fff; --coral: #ff6b6b; --green: #34d399; --pink: #f472b6;
+    --surface: #f7f9fc; --card: #ffffff; --border: #e2e8f0; --text: #374151; --muted: #6b7280;
+    --radius: 16px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--surface); color: var(--text); }
+
+  nav {
+    background: var(--ink); padding: 0 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 64px; position: sticky; top: 0; z-index: 100;
+  }
+  .nav-brand { font-family:'Syne',sans-serif; font-weight:800; font-size:1.1rem; color:var(--teal); text-decoration:none; }
+  .nav-brand span { color:#fff; }
+  .nav-links { display:flex; gap:4px; }
+  .nav-links a { color:rgba(255,255,255,0.7); text-decoration:none; font-size:0.875rem; font-weight:500; padding:8px 14px; border-radius:8px; transition:all 0.2s; }
+  .nav-links a:hover, .nav-links a.active { background:rgba(0,194,168,0.15); color:var(--teal); }
+  .hamburger { display:none; flex-direction:column; gap:5px; cursor:pointer; padding:4px; }
+  .hamburger span { display:block; width:22px; height:2px; background:#fff; border-radius:2px; }
+
+  .page-header {
+    background: linear-gradient(135deg, var(--ink) 0%, var(--ink2) 100%);
+    padding: 48px 24px 56px; color:#fff; text-align:center;
+  }
+  .page-header h1 { font-family:'Syne',sans-serif; font-size:clamp(1.6rem,4vw,2.6rem); font-weight:800; letter-spacing:-0.5px; margin-bottom:10px; }
+  .page-header p { color:rgba(255,255,255,0.6); font-size:0.95rem; }
+
+  .layout { display:flex; max-width:1200px; margin:0 auto; gap:0; }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 260px; flex-shrink: 0;
+    background: var(--card);
+    border-right: 1px solid var(--border);
+    padding: 24px 0;
+    height: calc(100vh - 64px);
+    position: sticky;
+    top: 64px;
+    overflow-y: auto;
+  }
+  .sidebar-heading {
+    font-family:'Syne',sans-serif; font-size:0.7rem; font-weight:700;
+    letter-spacing:2px; text-transform:uppercase; color:var(--muted);
+    padding:0 20px 10px; border-bottom:1px solid var(--border); margin-bottom:8px;
+  }
+  .sidebar-unit { margin-bottom:4px; }
+  .sidebar-unit-label {
+    font-size:0.7rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase;
+    color:var(--muted); padding: 10px 20px 4px; display:block;
+  }
+  .sidebar-link {
+    display:block; padding:8px 20px 8px 30px;
+    font-size:0.85rem; color:var(--text); text-decoration:none;
+    border-left:3px solid transparent; transition:all 0.2s;
+    line-height:1.4;
+  }
+  .sidebar-link:hover { color:var(--teal); background:rgba(0,194,168,0.05); border-left-color:var(--teal); }
+  .sidebar-link.active { color:var(--teal); background:rgba(0,194,168,0.08); border-left-color:var(--teal); font-weight:500; }
+
+  /* MAIN */
+  .main-content { flex:1; padding: 32px 32px 64px; max-width:860px; }
+
+  /* UNIT SECTION */
+  .unit-section { margin-bottom: 56px; }
+  .unit-banner {
+    background: var(--ink2);
+    color:#fff; padding:20px 28px; border-radius:var(--radius) var(--radius) 0 0;
+    display:flex; align-items:center; gap:14px;
+  }
+  .unit-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+  .unit-banner h2 { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; }
+  .unit-banner .unit-desc { font-size:0.82rem; color:rgba(255,255,255,0.6); margin-top:2px; }
+
+  /* CHAPTER CARD */
+  .chapter-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-top: none;
+    overflow: hidden;
+  }
+  .chapter-card:last-child { border-radius:0 0 var(--radius) var(--radius); }
+
+  .chapter-header {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 24px; cursor:pointer;
+    border-bottom:1px solid var(--border);
+    transition:background 0.2s;
+    user-select:none;
+    gap:12px;
+  }
+  .chapter-header:hover { background:rgba(0,194,168,0.04); }
+  .chapter-header-left { display:flex; align-items:center; gap:14px; }
+  .chapter-num {
+    width:32px; height:32px; border-radius:8px;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Syne',sans-serif; font-size:0.75rem; font-weight:800;
+    flex-shrink:0;
+  }
+  .chapter-title { font-family:'Syne',sans-serif; font-weight:700; font-size:0.95rem; color:var(--ink); }
+  .chapter-subtitle { font-size:0.78rem; color:var(--muted); margin-top:1px; }
+  .chapter-toggle { font-size:1.1rem; color:var(--muted); transition:transform 0.3s; flex-shrink:0; }
+  .chapter-header.open .chapter-toggle { transform:rotate(90deg); }
+
+  .chapter-body { display:none; padding:28px 28px 32px; border-bottom:1px solid var(--border); }
+  .chapter-body.open { display:block; }
+
+  /* CONTENT STYLES */
+  .chapter-body h3 {
+    font-family:'Syne',sans-serif; font-size:1rem; font-weight:700;
+    color:var(--ink); margin:24px 0 12px; padding-left:12px;
+    border-left:3px solid var(--teal);
+  }
+  .chapter-body h3:first-child { margin-top:0; }
+  .chapter-body h4 {
+    font-family:'Syne',sans-serif; font-size:0.88rem; font-weight:700;
+    color:var(--ink2); margin:16px 0 8px;
+  }
+  .chapter-body p { font-size:0.9rem; line-height:1.75; color:var(--text); margin-bottom:12px; }
+  .chapter-body ul { margin:0 0 14px 0; padding-left:0; list-style:none; }
+  .chapter-body ul li {
+    padding:6px 0 6px 20px; position:relative;
+    font-size:0.88rem; line-height:1.5; color:var(--text);
+    border-bottom:1px solid var(--surface);
+  }
+  .chapter-body ul li::before {
+    content:''; position:absolute; left:0; top:14px;
+    width:6px; height:6px; border-radius:50%; background:var(--teal);
+  }
+
+  .info-table { width:100%; border-collapse:collapse; margin:16px 0; font-size:0.85rem; }
+  .info-table th { background:var(--ink); color:#fff; padding:10px 14px; text-align:left; font-family:'Syne',sans-serif; font-size:0.75rem; font-weight:700; letter-spacing:0.5px; }
+  .info-table td { padding:10px 14px; border-bottom:1px solid var(--border); vertical-align:top; }
+  .info-table tr:hover td { background:rgba(0,194,168,0.04); }
+  .info-table th:first-child { border-radius:8px 0 0 0; }
+  .info-table th:last-child { border-radius:0 8px 0 0; }
+
+  .two-col { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:12px 0; }
+  .col-box { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:16px; }
+  .col-box-title { font-family:'Syne',sans-serif; font-size:0.78rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; }
+  .col-box ul { margin:0; }
+  .col-box ul li { border-bottom:none; }
+
+  .highlight-box {
+    background:linear-gradient(135deg, rgba(0,194,168,0.08), rgba(0,194,168,0.04));
+    border:1px solid rgba(0,194,168,0.25); border-radius:10px;
+    padding:16px 18px; margin:16px 0;
+  }
+  .highlight-box strong { color:var(--teal2); font-family:'Syne',sans-serif; }
+
+  .key-terms {
+    background:var(--surface); border-radius:10px; padding:16px 20px; margin:16px 0;
+  }
+  .key-terms h4 { color:var(--lavender); margin-bottom:10px; }
+  .term-row { display:flex; gap:10px; padding:7px 0; border-bottom:1px solid var(--border); font-size:0.85rem; }
+  .term-row:last-child { border-bottom:none; }
+  .term-word { font-weight:600; color:var(--ink); width:160px; flex-shrink:0; }
+  .term-def { color:var(--text); flex:1; }
+
+  @media(max-width:900px) {
+    .sidebar { display:none; }
+    .main-content { padding:24px 16px 48px; }
+    .two-col { grid-template-columns:1fr; }
+  }
+  @media(max-width:640px) {
+    .hamburger { display:flex; }
+    .nav-links { display:none; position:fixed; top:64px; left:0; right:0; background:var(--ink2); flex-direction:column; padding:16px; gap:4px; z-index:99; }
+    .nav-links.open { display:flex; }
+    .nav-links a { padding:12px 16px; font-size:1rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-brand">Digital<span>Lit</span></a>
+  <div class="nav-links" id="navLinks">
+    <a href="index.html">Home</a>
+    <a href="study-guide.html" class="active">Study Guide</a>
+    <a href="flashcards.html">Flashcards</a>
+    <a href="search.html">Search</a>
+    <a href="practice-test.html">Practice Test</a>
+  </div>
+  <div class="hamburger" id="hamburger" onclick="toggleNav()"><span></span><span></span><span></span></div>
+</nav>
+
+<div class="page-header">
+  <h1>📖 Study Guide</h1>
+  <p>Click any chapter to expand its full content. All 15 chapters across 6 units.</p>
+</div>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-heading">Navigation</div>
+    <div class="sidebar-unit">
+      <span class="sidebar-unit-label">Unit 1 — Foundations</span>
+      <a href="#ch1" class="sidebar-link">Ch 1: Digital Literacy</a>
+      <a href="#ch2" class="sidebar-link">Ch 2: Digital Technology</a>
+      <a href="#ch3" class="sidebar-link">Ch 3: Hardware &amp; Software</a>
+      <a href="#ch4" class="sidebar-link">Ch 4: Apps &amp; Cloud</a>
+    </div>
+    <div class="sidebar-unit">
+      <span class="sidebar-unit-label">Unit 2 — Communication</span>
+      <a href="#ch5" class="sidebar-link">Ch 5: Web 2.0 &amp; Multimedia</a>
+      <a href="#ch9" class="sidebar-link">Ch 9: Collaboration</a>
+    </div>
+    <div class="sidebar-unit">
+      <span class="sidebar-unit-label">Unit 3 — Citizenship</span>
+      <a href="#ch6" class="sidebar-link">Ch 6: Digital Citizenship</a>
+      <a href="#ch7" class="sidebar-link">Ch 7: Copyright &amp; IP</a>
+      <a href="#ch8" class="sidebar-link">Ch 8: Cyber Safety</a>
+    </div>
+    <div class="sidebar-unit">
+      <span class="sidebar-unit-label">Unit 4 — Web &amp; Commerce</span>
+      <a href="#ch10" class="sidebar-link">Ch 10: Websites &amp; Design</a>
+      <a href="#ch11" class="sidebar-link">Ch 11: Digital Tools in Society</a>
+      <a href="#ch12" class="sidebar-link">Ch 12: E-Commerce</a>
+    </div>
+    <div class="sidebar-unit">
+      <span class="sidebar-unit-label">Unit 5 — Emerging Tech</span>
+      <a href="#ch13" class="sidebar-link">Ch 13: VR &amp; Emerging Tech</a>
+      <a href="#ch14" class="sidebar-link">Ch 14: Health &amp; Wellness</a>
+    </div>
+    <div class="sidebar-unit">
+      <span class="sidebar-unit-label">Unit 6 — Exam Prep</span>
+      <a href="#ch15" class="sidebar-link">Ch 15: Practice &amp; Glossary</a>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main-content">
+
+    <!-- UNIT 1 -->
+    <div class="unit-section" id="unit1">
+      <div class="unit-banner">
+        <div class="unit-dot" style="background:var(--teal)"></div>
+        <div><div class="unit-banner h2" style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;">Unit 1 — Foundations of Digital Literacy</div><div class="unit-desc">Chapters 1–4</div></div>
+      </div>
+
+      <!-- Ch 1 -->
+      <div class="chapter-card" id="ch1">
+        <div class="chapter-header" onclick="toggleChapter(this)">
+          <div class="chapter-header-left">
+            <div class="chapter-num" style="background:rgba(0,194,168,0.15);color:var(--teal);">1</div>
+            <div><div class="chapter-title">Introduction to Digital Literacy</div><div class="chapter-subtitle">What it is, why it matters, characteristics</div></div>
+          </div>
+          <div class="chapter-toggle">›</div>
+        </div>
+        <div class="chapter-body" id="ch1-body">
+          <h3>What is Digital Literacy?</h3>
+          <p>Digital literacy refers to the ability to use digital technologies <strong>effectively, responsibly, and safely</strong>. A digitally literate person can locate information online, communicate using digital tools, create digital content, and evaluate information critically.</p>
+          <p>Digital literacy is important because technology is used in education, business, healthcare, entertainment, communication, banking, tourism, and government services. In the Caribbean, it has become increasingly vital as schools, businesses, and public services rely more heavily on technology.</p>
+          <p>A person who lacks digital literacy may struggle to complete schoolwork, apply for jobs, communicate professionally, or recognise online dangers such as scams and misinformation.</p>
+
+          <h3>Why Digital Literacy is Important</h3>
+          <ul>
+            <li>Communicate effectively</li>
+            <li>Access information quickly</li>
+            <li>Complete school and work tasks efficiently</li>
+            <li>Stay safe online</li>
+            <li>Participate in modern society</li>
+            <li>Create and share content responsibly</li>
+          </ul>
+
+          <h3>Characteristics of a Digitally Literate Person</h3>
+          <ul>
+            <li>Uses technology confidently</li>
+            <li>Understands online safety</li>
+            <li>Respects others online</li>
+            <li>Uses productivity tools effectively</li>
+            <li>Evaluates online information carefully</li>
+            <li>Understands ethical behaviour online</li>
+          </ul>
+
+          <div class="key-terms">
+            <h4>🔑 Key Terms</h4>
+            <div class="term-row"><span class="term-word">Digital Literacy</span><span class="term-def">The ability to use digital tools effectively and responsibly</span></div>
+            <div class="term-row"><span class="term-word">Digital Technology</span><span class="term-def">Electronic tools and systems used to create, store, and share information</span></div>
+            <div class="term-row"><span class="term-word">Digital Media</span><span class="term-def">Content created and shared digitally such as videos, images, podcasts, and websites</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ch 2 -->
+      <div class="chapter-card" id="ch2">
+        <div class="chapter-header" onclick="toggleChapter(this)">
+          <div class="chapter-header-left">
+            <div class="chapter-num" style="background:rgba(0,194,168,0.15);color:var(--teal);">2</div>
+            <div><div class="chapter-title">Understanding Digital Technology</div><div class="chapter-subtitle">Devices, digital media, wireless technology</div></div>
+          </div>
+          <div class="chapter-toggle">›</div>
+        </div>
+        <div class="chapter-body" id="ch2-body">
+          <h3>What is Digital Technology?</h3>
+          <p>Digital technology includes electronic devices and systems that process information using <strong>binary code</strong>. Examples include smartphones, laptops, tablets, smart TVs, and gaming consoles.</p>
+
+          <h3>Examples of Digital Technology</h3>
+          <ul><li>Computers</li><li>Smartphones</li><li>Tablets</li><li>Smart watches</li><li>Interactive whiteboards</li><li>Digital cameras</li><li>Wireless routers</li></ul>
+
+          <h3>Digital Media</h3>
+          <p>Digital media refers to any media content stored or transmitted digitally, including videos, images, podcasts, music, websites, social media posts, and online advertisements.</p>
+
+          <h3>Wireless Technology</h3>
+          <p>Wireless devices connect to networks without physical cables — for example smartphones, Bluetooth speakers, wireless headphones, tablets, and smart TVs.</p>
+          <div class="two-col">
+            <div class="col-box">
+              <div class="col-box-title">✅ Advantages</div>
+              <ul><li>Portability</li><li>Convenience</li><li>Mobility</li><li>Faster communication</li></ul>
+            </div>
+            <div class="col-box">
+              <div class="col-box-title">❌ Disadvantages</div>
+              <ul><li>Security risks</li><li>Dependence on internet</li><li>Battery limitations</li></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ch 3 -->
+      <div class="chapter-card" id="ch3">
+        <div class="chapter-header" onclick="toggleChapter(this)">
+          <div class="chapter-header-left">
+            <div class="chapter-num" style="background:rgba(0,194,168,0.15);color:var(--teal);">3</div>
+            <div><div class="chapter-title">Hardware and Software</div><div class="chapter-subtitle">Input/output/storage devices, system &amp; application software</div></div>
+          </div>
+          <div class="chapter-toggle">›</div>
+        </div>
+        <div class="chapter-body" id="ch3-body">
+          <h3>Hardware</h3>
+          <p>Hardware refers to the <strong>physical components</strong> of a computer or digital device — the parts that can be seen and touched. Hardware works together to input data, process information, store files, and display results.</p>
+
+          <table class="info-table">
+            <tr><th>Device</th><th>Purpose</th></tr>
+            <tr><td>Keyboard</td><td>Inputs text</td></tr>
+            <tr><td>Mouse</td><td>Controls the pointer</td></tr>
+            <tr><td>Monitor</td><td>Displays information</td></tr>
+            <tr><td>Printer</td><td>Produces hard copies</td></tr>
+            <tr><td>CPU</td><td>Processes data</td></tr>
+            <tr><td>Scanner</td><td>Converts documents to digital form</td></tr>
+          </table>
+
+          <h3>Types of Hardware</h3>
+          <div class="two-col">
+            <div class="col-box">
+              <div class="col-box-title">Input Devices</div>
+              <ul><li>Keyboard</li><li>Mouse</li><li>Scanner</li><li>Microphone</li></ul>
+            </div>
+            <div class="col-box">
+              <div class="col-box-title">Output Devices</div>
+              <ul><li>Monitor</li><li>Printer</li><li>Speakers</li><li>Projector</li></ul>
+            </div>
+          </div>
+          <div class="col-box" style="margin-top:12px;">
+            <div class="col-box-title">Storage Devices</div>
+            <ul><li>Hard drive</li><li>Flash drive</li><li>Memory card</li><li>External hard drive</li></ul>
+          </div>
+
+          <h3>Software</h3>
+          <p>Software refers to programs and instructions that tell hardware what to do.</p>
+          <div class="two-col">
+            <div class="col-box">
+              <div class="col-box-title">System Software</div>
+              <p style="font-size:0.82rem;color:var(--muted);margin-bottom:8px;">Manages the computer's operations</p>
+              <ul><li>Windows</li><li>macOS</li><li>Android</li><li>iOS</li></ul>
+            </div>
+            <div class="col-box">
+              <div class="col-box-title">Application Software</div>
+              <p style="font-size:0.82rem;color:var(--muted);margin-bottom:8px;">Helps users complete specific tasks</p>
+              <ul><li>Microsoft Word</li><li>Google Docs</li><li>Canva</li><li>Zoom</li></ul>
+            </div>
+          </div>
+
+          <table class="info-table" style="margin-top:16px;">
+            <tr><th>Hardware</th><th>Software</th></tr>
+            <tr><td>Physical components</td><td>Programs and instructions</td></tr>
+            <tr><td>Can be touched</td><td>Cannot be touched</td></tr>
+            <tr><td>Example: monitor, keyboard</td><td>Example: Word, Excel</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- Ch 4 -->
+      <div class="chapter-card" id="ch4">
+        <div class="chapter-header" onclick="toggleChapter(this)">
+          <div class="chapter-header-left">
+            <div class="chapter-num" style="background:rgba(0,194,168,0.15);color:var(--teal);">4</div>
+            <div><div class="chapter-title">Applications and Productivity Tools</div><div class="chapter-subtitle">Apps, productivity tools, cloud computing</div></div>
+          </div>
+          <div class="chapter-toggle">›</div>
+        </div>
+        <div class="chapter-body" id="ch4-body">
+          <h3>What are Applications (Apps)?</h3>
+          <p>Applications, or apps, are software programs designed to perform specific tasks. Examples include WhatsApp, TikTok, Instagram, Google Classroom, Canva, Zoom, and YouTube.</p>
+
+          <h3>Productivity Tools</h3>
+          <table class="info-table">
+            <tr><th>Tool</th><th>Purpose</th></tr>
+            <tr><td>Word Processor</td><td>Create documents</td></tr>
+            <tr><td>Spreadsheet</td><td>Organise data and calculations</td></tr>
+            <tr><td>Presentation Software</td><td>Create slideshows</td></tr>
+            <tr><td>Database Software</td><td>Store and manage information</td></tr>
+          </table>
+          <p>Examples: Microsoft Word, Excel, PowerPoint, Google Docs, Sheets, Slides.</p>
+
+          <h3>Benefits of Productivity Tools</h3>
+          <ul><li>Save time</li><li>Improve organisation</li><li>Increase collaboration</li><li>Enhance communication</li></ul>
+
+          <h3>Cloud Computing</h3>
+          <p>The cloud refers to online storage and services accessed through the internet. Examples: Google Drive, OneDrive, Dropbox, iCloud.</p>
+          <div class="two-col">
+            <div class="col-box">
+              <div class="col-box-title">✅ Advantages</div>
+              <ul><li>Access files anywhere</li><li>Automatic backups</li><li>Easy collaboration</li><li>Reduced device storage needs</li></ul>
+            </div>
+            <div class="col-box">
+              <div class="col-box-title">❌ Disadvantages</div>
+              <ul><li>Requires internet access</li><li>Security concerns</li><li>Limited free storage</li></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /unit1 -->
+
+    <!-- UNIT 2 -->
+    <div class="unit-section" id="unit2">
+      <div class="unit-banner">
+        <div class="unit-dot" style="background:var(--lavender)"></div>
+        <div><div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:#fff;">Unit 2 — Online Communication &amp; Collaboration</div><div class="unit-desc">Chapters 5, 9</div></div>
+      </div>
+
+      <!-- Ch 5 -->
+      <div class="chapter-card" id="ch5">
+        <div class="chapter-header" onclick="toggleChapter(this)">
+          <div class="chapter-header-left">
+            <div class="chapter-num" style="background:rgba(123,111,255,0.15);color:var(--lavender);">5</div>
+            <div><div class="chapter-title">Web 2.0 and Multimedia Production</div><div class="chapter-subtitle">Interactive web, multimedia tools and forms</div></div>
+          </div>
+          <div class="chapter-toggle">›</div>
+        </div>
+        <div class="chapter-body" id="ch5-body">
+          <h3>What is Web 2.0?</h3>
+          <p>Web 2.0 refers to interactive websites and platforms where users can <strong>create and share content</strong>. Features include user-generated content, social networking, collaboration, and interactive communication.</p>
+          <p>Examples: Facebook, TikTok, Instagram, YouTube, Wikipedia.</p>
+
+          <h3>Multimedia Production</h3>
+          <p>Multimedia production involves creating digital content using different forms of media: text, images, audio, video, and animation.</p>
+          <table class="info-table">
+            <tr><th>Tool</th><th>Purpose</th></tr>
+            <tr><td>Canva</td><td>Graphic design</td></tr>
+            <tr><td>CapCut</td><td>Video editing</td></tr>
+            <tr><td>Audacity</td><td>Audio editing</td></tr>
+            <tr><td>PowerPoint</td><td>Presentations</td></tr>
+          </table>
+
+          <h3>Benefits of Multimedia</h3>
+          <ul><li>Makes information engaging</li><li>Improves communication</li><li>Enhances learning</li><li>Supports creativity</li></ul>
+        </div>
+      </div>
+
+      <!-- Ch 9 -->
+      <div class="chapter-card" id="ch9">
+        <div class="chapter-header" onclick="toggleChapter(this)">
+          <div class="chapter-header-left">
+            <div class="chapter-num" style="background:rgba(123,111,255,0.15);color:var(--lavender);">9</div>
+            <div><div class="chapter-title">Communication and Collaboration Online</div><div class="chapter-subtitle">Sync vs async, email vs live chat, collaboration tools</div></div>
+          </div>
+          <div class="chapter-toggle">›</div>
+        </div>
+        <div class="chapter-body" id="ch9-body">
+          <h3>Communication vs Collaboration</h3>
+          <table class="info-table">
+            <tr><th>Communication</th><th>Collaboration</th></tr>
+            <tr><td>Sharing information</td><td>Working together</td></tr>
+            <tr><td>May involve one-way messages</td><td>Requires teamwork</td></tr>
+            <tr><td>Example: email</td><td>Example: Google Docs</td></tr>
+          </table>
+
+          <h3>Synchronous vs Asynchronous Communication</h3>
+          <div class="two-col">
+            <div class="col-box">
+              <div class="col-box-title">Synchronous (Real-time)</div>
+              <ul><li>Video calls</li><li>Live chat</li><li>Phone calls</li><li>Live online classes</li></ul>
+            </div>
+            <div class="col-box">
+              <div class="col-box-title">Asynchronous (Not real-time)</div>
+              <ul><li>Email</li><li>Discussion boards</li><li>Recorded videos</li></ul>
+            </div>
+          </div>
+
+          <h3>Email vs Live Chat</h3>
+          <table class="info-table">
+            <tr><th>Email</th><th>Live Chat</th></tr>
+            <tr><td>Formal</td><td>Informal</td></tr>
+            <tr><td>Not instant</td><td>Instant communication</td></tr>
+            <tr><td>Usually longer messages</td><td>Usually short messages</td></tr>
+            <tr><td>Asynchronous</td><td>Synchronous</td></tr>
+          </table>
+
+          <h3>Digital Collaboration Tools</h3>
+          <ul><li>Google Docs</li><li>Google Slides</li><li>Google Sheets</li><li>Microsoft Teams</li><li>Trello</li></ul>
+
+          <div class="highlight-box">
+            <strong>💡 Did You Know?</strong> Remote work and online collaboration increased significantly after COVID-19, causing many schools and workplaces to rely heavily on digital communication platforms.
+          </div>
+        </div>
+      </div>
+    </div><!-- /unit2 -->
+
+    <!-- UNIT 3 -->
+    <div class="unit-section" id="unit3">
+      <div class="unit-banner">
+        <div class="unit-dot" style="background:var(--amber)"></div>
+        <div><div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:#fff;">Unit 3 — Digital Citizenship &amp; Online Safety</div><div class="unit-desc">Chapters 6–8</div></div>
+      </div>
+
+      <!-- Ch 6 -->
+      <div class="chapter-card" id="ch6">
+        <div class="chapter-header" onclick="toggleChapter(this)">
+          <div class="chapter-header-left">
+            <div class="chapter-num" style="background:rgba(245,166,35,0.15);color:var(--amber);">6</div>
+            <div><div class="chapter-title">Digital Citizenship and Online Responsibility</div><div class="chapter-subtitle">Digital footprints, netiquette, responsible behaviour</div></div>
+          </div>
+          <div class="chapter-toggle">›</div>
+        </div>
+        <div class="chapter-body" id="ch6-body">
+          <h3>What is Digital Citizenship?</h3>
+          <p>Digital citizenship refers to responsible, safe, and ethical behaviour when using digital technologies.</p>
+          <h4>Characteristics of a Good Digital Citizen</h4>
+          <ul><li>Respect others online</li><li>Protect personal information</li><li>Communicate politely</li><li>Follow laws and rules</li><li>Think critically about information</li></ul>
+
+          <h3>Digital Footprint</h3>
+          <p>A digital footprint is the <strong>trail of information left online</strong> through activities such as posting, commenting, browsing, searching, and sharing content. Even deleted posts may remain accessible through screenshots or archives.</p>
+          <p>Employers and schools may review a person's online presence before offering opportunities, so students should think carefully before posting online.</p>
+          <div class="two-col">
+            <div class="col-box">
+              <div class="col-box-title">Active Digital Footprint</div>
+              <p style="font-size:0.82rem;color:var(--muted);margin-bottom:8px;">Intentionally shared online</p>
+              <ul><li>Social media posts</li><li>Comments</li><li>Uploaded videos</li></ul>
+            </div>
+            <div class="col-box">
+              <div class="col-box-title">Passive Digital Footprint</div>
+              <p style="font-size:0.82rem;color:var(--muted);margin-bottom:8px;">Collected without direct user input</p>
+              <ul><li>Cookies</li><li>Browsing history</li><li>Location tracking</li></ul>
+            </div>
+          </div>
+
+          <h3>Managing Your Digital Footprint</h3>
+          <ul><li>Think before posting</li><li>Use strong privacy settings</li><li>Avoid oversharing personal information</li><li>Use respectful language online</li></ul>
+
+          <h3>Netiquette</h3>
+          <p>Netiquette refers to proper online behaviour. Examples: using respectful language, avoiding typing in ALL CAPS, responding politely, respecting others' opinions.</p>
+
+          <div class="key-terms">
+            <h4>🔑 Key Terms</h4>
+            <div class="term-row"><span class="term-word">Digital Citizenship</span><span class="term-def">Responsible online behaviour</span></div>
+            <div class="term-row"><span class="term-word">Digital Footprint</span><span class="term-def">Information left online by a user</span></div>
+            <div class="term-row"><span class="term-word">Netiquette</span><span class="term-def">Proper online behaviour</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ch 7 -->
+      <div class="chapter-card" id="ch7">
+        <div class="chapter-header" onclick="toggleChapter(this)">
+          <div class="chapter-header-left">
+            <div class="chapter-num" style="background:rgba(245,166,35,0.15);color:var(--amber);">7</div>
+            <div><div class="chapter-title">Intellectual Property and Copyright</div><div class="chapter-subtitle">Copyright, plagiarism, piracy</div></div>
+          </div>
+          <div class="chapter-toggle">›</div>
+        </div>
+        <div class="chapter-body" id="ch7-body">
+          <h3>Intellectual Property Rights</h3>
+          <p>Intellectual property rights protect creations of the mind such as music, books, inventions, and artwork.</p>
+
+          <h3>Copyright</h3>
+          <p>Copyright is <strong>legal protection</strong> given to creators of original work. Copyrighted materials include songs, movies, books, photographs, and software.</p>
+
+          <h3>Plagiarism</h3>
+          <p>Plagiarism occurs when someone uses another person's work without giving credit. Examples: copying from a website without citing the source, submitting another person's work as your own.</p>
+          <h4>How to Avoid Plagiarism</h4>
+          <ul><li>Cite sources properly</li><li>Use quotation marks for direct quotes</li><li>Paraphrase information correctly</li></ul>
+
+          <h3>Piracy</h3>
+          <p>Piracy is the <strong>illegal copying or distribution</strong> of copyrighted material. Examples include downloading movies illegally, using cracked software, and sharing copyrighted music illegally.</p>
+
+          <div class="key-terms">
+            <h4>🔑 Key Terms</h4>
+            <div class="term-row"><span class="term-word">Copyright</span><span class="term-def">Legal protection for original work</span></div>
+            <div class="term-row"><span class="term-word">Plagiarism</span><span class="term-def">Using another's work without credit</span></div>
+            <div class="term-row"><span class="term-word">Piracy</span><span class="term-def">Illegal copying of digital content</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ch 8 -->
+      <div class="chapter-card" id="ch8">
+        <div class="chapter-header" onclick="toggleChapter(this)">
+          <div class="chapter-header-left">
+            <div class="chapter-num" style="background:rgba(245,166,35,0.15);color:var(--amber);">8</div>
+            <div><div class="chapter-title">Cyber Safety and Online Threats</div><div class="chapter-subtitle">Cyberbullying, phishing, identity theft, staying safe</div></div>
+          </div>
+          <div class="chapter-toggle">›</div>
+        </div>
+        <div class="chapter-body" id="ch8-body">
+          <h3>Cyberbullying</h3>
+          <p>Cyberbullying is bullying that takes place online. Examples: sending hurtful messages, sharing embarrassing photos, spreading rumours online.</p>
+          <h4>Effects of Cyberbullying</h4>
+          <ul><li>Anxiety</li><li>Depression</li><li>Low self-esteem</li><li>Social isolation</li></ul>
+
+          <h3>Phishing</h3>
+          <p>Phishing is a scam where criminals attempt to trick people into revealing personal information such as passwords, banking details, or account information. Attacks often appear as emails, texts, or fake websites pretending to be legitimate organisations.</p>
+          <h4>Signs of Phishing</h4>
+          <ul><li>Suspicious links</li><li>Requests for passwords</li><li>Poor spelling and grammar</li><li>Urgent messages</li></ul>
+
+          <h3>Identity Theft</h3>
+          <p>Identity theft occurs when someone steals another person's personal information to use fraudulently.</p>
+
+          <h3>Cybercrime</h3>
+          <p>Cybercrime refers to crimes committed using digital technology. Examples: hacking, online fraud, identity theft, phishing scams.</p>
+
+          <h3>Staying Safe Online</h3>
+          <ul><li>Use strong passwords</li><li>Avoid suspicious links</li><li>Enable two-factor authentication</li><li>Keep software updated</li><li>Never share private information publicly</li></ul>
+
+          <div class="key-terms">
+            <h4>🔑 Key Terms</h4>
+            <div class="term-row"><span class="term-word">Cyberbullying</span><span class="term-def">Bullying using digital technology</span></div>
+            <div class="term-row"><span class="term-word">Phishing</span><span class="term-def">Attempt to steal information online</span></div>
+            <div class="term-row"><span class="term-word">Identity Theft</span><span class="term-def">Stealing someone's personal information</span></div>
+            <div class="term-row"><span class="term-word">Cybercrime</span><span class="term-def">Crimes committed using digital technology</span></div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /unit3 -->
+
+    <!-- UNIT 4 -->
+    <div class="unit-section" id="unit4">
+      <div class="unit-banner">
+        <div class="unit-dot" style="background:var(--coral)"></div>
+        <div><div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:#fff;">Unit 4 — Websites, E-Commerce &amp; Digital World</div><div class="unit-desc">Chapters 10–12</div></div>
+      </div>
+
+      <!-- Ch 10 -->
+      <div class="chapter-card" id="ch10">
+        <div class="chapter-header" onclick="toggleChapter(this)">
+          <div class="chapter-header-left">
+            <div class="chapter-num" style="background:rgba(255,107,107,0.15);color:var(--coral);">10</div>
+            <div><div class="chapter-title">Websites and Web Design</div><div class="chapter-subtitle">Purposes, features, design principles</div></div>
+          </div>
+          <div class="chapter-toggle">›</div>
+        </div>
+        <div class="chapter-body" id="ch10-body">
+          <h3>What is a Website?</h3>
+          <p>A website is a collection of related web pages available online. Purposes include education, entertainment, communication, business, news, and e-commerce.</p>
+
+          <h3>Features of a Website</h3>
+          <ul><li>Homepage</li><li>Navigation menu</li><li>Images and videos</li><li>Contact information</li><li>Hyperlinks</li><li>Search bar</li></ul>
+
+          <h3>Factors to Consider When Building a Website</h3>
+          <table class="info-table">
+            <tr><th>Factor</th><th>Description</th></tr>
+            <tr><td>Audience</td><td>Who will use the website?</td></tr>
+            <tr><td>Purpose</td><td>What is the website trying to achieve?</td></tr>
+            <tr><td>Design</td><td>Visually appealing and easy to use</td></tr>
+            <tr><td>Accessibility</td><td>Accessible to all users</td></tr>
+            <tr><td>Content</td><td>Accurate and well-organised information</td></tr>
+          </table>
+
+          <h3>Good Website Design Principles</h3>
+          <ul><li>Clear navigation</li><li>Readable fonts</li><li>Appropriate colours</li><li>Mobile-friendly layout</li><li>Fast loading speed</li></ul>
+
+          <div class="highlight-box"><strong>💡 Did You Know?</strong> Studies show that users often decide whether they trust a website within just a few seconds of opening it.</div>
+        </div>
+      </div>
+
+      <!-- Ch 11 -->
+      <div class="chapter-card" id="ch11">
+        <div class="chapter-header" onclick="toggleChapter(this)">
+          <div class="chapter-header-left">
+            <div class="chapter-num" style="background:rgba(255,107,107,0.15);color:var(--coral);">11</div>
+            <div><div class="chapter-title">Digital Tools in Society</div><div class="chapter-subtitle">Education, healthcare, business, agriculture, entertainment</div></div>
+          </div>
+          <div class="chapter-toggle">›</div>
+        </div>
+        <div class="chapter-body" id="ch11-body">
+          <h3>How Digital Tools Impact Society</h3>
+          <p>Digital tools affect many sectors of society including education, healthcare, business, agriculture, and entertainment.</p>
+
+          <table class="info-table">
+            <tr><th>Sector</th><th>How Digital Tools Help</th></tr>
+            <tr><td>Education</td><td>Online learning, research, collaboration, interactive lessons</td></tr>
+            <tr><td>Healthcare</td><td>Telemedicine, digital records, online appointments, health monitoring</td></tr>
+            <tr><td>Business</td><td>Marketing, communication, sales, customer service</td></tr>
+            <tr><td>Agriculture</td><td>Weather tracking, smart irrigation, data collection</td></tr>
+            <tr><td>Entertainment</td><td>Streaming services, gaming, social media content creation</td></tr>
+          </table>
+
+          <div class="two-col">
+            <div class="col-box">
+              <div class="col-box-title">✅ Advantages</div>
+              <ul><li>Faster communication</li><li>Increased efficiency</li><li>Access to information</li><li>Global connectivity</li></ul>
+            </div>
+            <div class="col-box">
+              <div class="col-box-title">❌ Disadvantages</div>
+              <ul><li>Job displacement</li><li>Privacy concerns</li><li>Cybercrime</li><li>Technology addiction</li></ul>
+            </div>
+          </div>
+
+          <div class="key-terms">
+            <h4>🔑 Key Terms</h4>
+            <div class="term-row"><span class="term-word">Telemedicine</span><span class="term-def">Healthcare delivered via digital technology</span></div>
+            <div class="term-row"><span class="term-word">Automation</span><span class="term-def">Using technology to perform tasks automatically</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ch 12 -->
+      <div class="chapter-card" id="ch12">
+        <div class="chapter-header" onclick="toggleChapter(this)">
+          <div class="chapter-header-left">
+            <div class="chapter-num" style="background:rgba(255,107,107,0.15);color:var(--coral);">12</div>
+            <div><div class="chapter-title">E-Commerce and the Digital Economy</div><div class="chapter-subtitle">Types of e-commerce, payment methods, safe shopping</div></div>
+          </div>
+          <div class="chapter-toggle">›</div>
+        </div>
+        <div class="chapter-body" id="ch12-body">
+          <h3>What is E-Commerce?</h3>
+          <p>E-commerce refers to buying and selling goods and services <strong>online using digital platforms</strong>. Examples include Amazon, eBay, Etsy, and Shopify stores.</p>
+
+          <h3>Types of E-Commerce</h3>
+          <table class="info-table">
+            <tr><th>Type</th><th>Meaning</th></tr>
+            <tr><td>B2C (Business to Consumer)</td><td>Businesses sell to customers</td></tr>
+            <tr><td>C2C (Consumer to Consumer)</td><td>Customers sell to customers</td></tr>
+            <tr><td>B2B (Business to Business)</td><td>Businesses sell to businesses</td></tr>
+          </table>
+
+          <div class="two-col">
+            <div class="col-box">
+              <div class="col-box-title">✅ Advantages</div>
+              <ul><li>Convenience</li><li>Global market access</li><li>24-hour availability</li><li>Reduced business costs</li></ul>
+            </div>
+            <div class="col-box">
+              <div class="col-box-title">❌ Disadvantages</div>
+              <ul><li>Security risks</li><li>No physical inspection</li><li>Dependence on internet</li></ul>
+            </div>
+          </div>
+
+          <h3>Online Payment Methods</h3>
+          <ul><li>Credit cards</li><li>Debit cards</li><li>PayPal</li><li>Online banking</li><li>Mobile wallets</li></ul>
+
+          <h3>Safe Online Shopping Tips</h3>
+          <ul><li>Use trusted websites</li><li>Check for secure payment symbols</li><li>Avoid public Wi-Fi for transactions</li><li>Read reviews before purchasing</li></ul>
+        </div>
+      </div>
+    </div><!-- /unit4 -->
+
+    <!-- UNIT 5 -->
+    <div class="unit-section" id="unit5">
+      <div class="unit-banner">
+        <div class="unit-dot" style="background:var(--green)"></div>
+        <div><div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:#fff;">Unit 5 — Emerging Technology &amp; Wellness</div><div class="unit-desc">Chapters 13–14</div></div>
+      </div>
+
+      <!-- Ch 13 -->
+      <div class="chapter-card" id="ch13">
+        <div class="chapter-header" onclick="toggleChapter(this)">
+          <div class="chapter-header-left">
+            <div class="chapter-num" style="background:rgba(52,211,153,0.15);color:var(--green);">13</div>
+            <div><div class="chapter-title">Virtual Reality and Emerging Technologies</div><div class="chapter-subtitle">VR, AR, AI, robotics, smart devices</div></div>
+          </div>
+          <div class="chapter-toggle">›</div>
+        </div>
+        <div class="chapter-body" id="ch13-body">
+          <h3>What is Virtual Reality?</h3>
+          <p>Virtual reality (VR) is technology that creates a <strong>simulated digital environment</strong>. Users can experience and interact with this environment using special headsets and controllers.</p>
+
+          <h3>Uses of Virtual Reality</h3>
+          <ul><li>Gaming</li><li>Education</li><li>Healthcare training (e.g. surgery simulations)</li><li>Tourism</li><li>Architecture</li><li>Therapy and sports training</li></ul>
+
+          <div class="two-col">
+            <div class="col-box">
+              <div class="col-box-title">✅ Advantages</div>
+              <ul><li>Interactive learning</li><li>Realistic simulations</li><li>Enhanced engagement</li></ul>
+            </div>
+            <div class="col-box">
+              <div class="col-box-title">❌ Disadvantages</div>
+              <ul><li>Expensive equipment</li><li>Motion sickness</li><li>Limited accessibility</li></ul>
+            </div>
+          </div>
+
+          <h3>Other Emerging Technologies</h3>
+          <ul><li>Artificial Intelligence (AI)</li><li>Augmented Reality (AR)</li><li>Robotics</li><li>Smart devices</li></ul>
+
+          <div class="key-terms">
+            <h4>🔑 Key Terms</h4>
+            <div class="term-row"><span class="term-word">Virtual Reality</span><span class="term-def">Simulated digital environment</span></div>
+            <div class="term-row"><span class="term-word">Augmented Reality</span><span class="term-def">Digital elements overlaid on the real world</span></div>
+            <div class="term-row"><span class="term-word">Artificial Intelligence</span><span class="term-def">Machines simulating human intelligence</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ch 14 -->
+      <div class="chapter-card" id="ch14">
+        <div class="chapter-header" onclick="toggleChapter(this)">
+          <div class="chapter-header-left">
+            <div class="chapter-num" style="background:rgba(52,211,153,0.15);color:var(--green);">14</div>
+            <div><div class="chapter-title">Health and Wellness in the Digital Age</div><div class="chapter-subtitle">Screen time, mental health, healthy digital habits</div></div>
+          </div>
+          <div class="chapter-toggle">›</div>
+        </div>
+        <div class="chapter-body" id="ch14-body">
+          <h3>Negative Effects of Digital Tools on Health</h3>
+          <table class="info-table">
+            <tr><th>Issue</th><th>Description</th></tr>
+            <tr><td>Eye Strain</td><td>Too much screen time causes headaches and blurred vision</td></tr>
+            <tr><td>Poor Posture</td><td>Improper sitting causes back and neck pain</td></tr>
+            <tr><td>Sleep Problems</td><td>Using devices late at night interferes with sleep</td></tr>
+            <tr><td>Mental Health</td><td>Social media pressure, cyberbullying, and anxiety</td></tr>
+            <tr><td>Addiction</td><td>Overuse of devices can lead to technology addiction</td></tr>
+          </table>
+
+          <h3>Healthy Digital Habits</h3>
+          <ul><li>Take regular breaks from screens</li><li>Use correct posture</li><li>Limit screen time before bed</li><li>Exercise regularly</li><li>Balance online and offline activities</li></ul>
+
+          <div class="highlight-box">
+            <strong>🎯 The 20-20-20 Rule:</strong> Every 20 minutes, look at something 20 feet away for 20 seconds to reduce eye strain.
+          </div>
+        </div>
+      </div>
+    </div><!-- /unit5 -->
+
+    <!-- UNIT 6 -->
+    <div class="unit-section" id="unit6">
+      <div class="unit-banner">
+        <div class="unit-dot" style="background:var(--pink)"></div>
+        <div><div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:#fff;">Unit 6 — Examination Preparation</div><div class="unit-desc">Chapter 15</div></div>
+      </div>
+
+      <!-- Ch 15 -->
+      <div class="chapter-card" id="ch15">
+        <div class="chapter-header" onclick="toggleChapter(this)">
+          <div class="chapter-header-left">
+            <div class="chapter-num" style="background:rgba(244,114,182,0.15);color:var(--pink);">15</div>
+            <div><div class="chapter-title">Practice Activities, Review &amp; Glossary</div><div class="chapter-subtitle">Key terms glossary, review questions</div></div>
+          </div>
+          <div class="chapter-toggle">›</div>
+        </div>
+        <div class="chapter-body" id="ch15-body">
+          <h3>Complete Glossary of Key Terms</h3>
+          <table class="info-table">
+            <tr><th>Term</th><th>Definition</th></tr>
+            <tr><td>Application</td><td>Software designed to perform specific tasks</td></tr>
+            <tr><td>Asynchronous</td><td>Communication that does not happen in real time</td></tr>
+            <tr><td>Cloud</td><td>Online storage and services</td></tr>
+            <tr><td>Collaboration</td><td>Working together to complete a task</td></tr>
+            <tr><td>Copyright</td><td>Legal protection for original work</td></tr>
+            <tr><td>Cyberbullying</td><td>Bullying using digital technology</td></tr>
+            <tr><td>Digital Citizenship</td><td>Responsible online behaviour</td></tr>
+            <tr><td>Digital Footprint</td><td>Information left online by a user</td></tr>
+            <tr><td>E-Commerce</td><td>Buying and selling online</td></tr>
+            <tr><td>Hardware</td><td>Physical parts of a computer</td></tr>
+            <tr><td>Netiquette</td><td>Proper online behaviour</td></tr>
+            <tr><td>Phishing</td><td>Attempt to steal information online</td></tr>
+            <tr><td>Piracy</td><td>Illegal copying of digital content</td></tr>
+            <tr><td>Productivity Tools</td><td>Software used to complete tasks efficiently</td></tr>
+            <tr><td>Software</td><td>Programs and instructions for computers</td></tr>
+            <tr><td>Synchronous</td><td>Communication happening in real time</td></tr>
+            <tr><td>Virtual Reality</td><td>Simulated digital environment</td></tr>
+            <tr><td>Web 2.0</td><td>Interactive web platforms</td></tr>
+          </table>
+
+          <h3>Exam Practice — Short Answer</h3>
+          <ul>
+            <li>Define cloud computing.</li>
+            <li>State two benefits of online collaboration.</li>
+            <li>Explain the difference between communication and collaboration.</li>
+            <li>Describe two dangers of phishing.</li>
+            <li>Explain one difference between synchronous and asynchronous communication.</li>
+          </ul>
+
+          <div class="highlight-box" style="margin-top:16px;">
+            <strong>📝 Tip:</strong> Head over to the <a href="practice-test.html" style="color:var(--teal);">Practice Test page</a> for 30 multiple choice questions covering all units!
+          </div>
+        </div>
+      </div>
+    </div><!-- /unit6 -->
+
+  </div><!-- /main-content -->
+</div><!-- /layout -->
+
+<script>
+  function toggleNav() {
+    document.getElementById('navLinks').classList.toggle('open');
+  }
+  function toggleChapter(header) {
+    header.classList.toggle('open');
+    const body = header.nextElementSibling;
+    body.classList.toggle('open');
+    // Update sidebar active
+    const id = header.closest('.chapter-card').id;
+    document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+    const link = document.querySelector(`.sidebar-link[href="#${id}"]`);
+    if (link) link.classList.add('active');
+  }
+  // Open chapter from hash
+  window.addEventListener('DOMContentLoaded', () => {
+    const hash = window.location.hash;
+    if (hash) {
+      const card = document.querySelector(hash);
+      if (card) {
+        const header = card.querySelector('.chapter-header');
+        if (header) {
+          toggleChapter(header);
+          setTimeout(() => card.scrollIntoView({behavior:'smooth', block:'start'}), 100);
+        }
+      }
+    }
+  });
+</script>
+</body>
+</html>

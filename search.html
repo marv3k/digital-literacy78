@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Search | Digital Literacy CCSLC</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:#0d1117;--ink2:#1e2633;--teal:#00c2a8;--teal2:#00968a;
+    --amber:#f5a623;--lavender:#7b6fff;--coral:#ff6b6b;--green:#34d399;--pink:#f472b6;
+    --surface:#f7f9fc;--card:#fff;--border:#e2e8f0;--text:#374151;--muted:#6b7280;
+    --radius:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--text);min-height:100vh;}
+
+  nav{background:var(--ink);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:100;}
+  .nav-brand{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:var(--teal);text-decoration:none;}
+  .nav-brand span{color:#fff;}
+  .nav-links{display:flex;gap:4px;}
+  .nav-links a{color:rgba(255,255,255,0.7);text-decoration:none;font-size:0.875rem;font-weight:500;padding:8px 14px;border-radius:8px;transition:all 0.2s;}
+  .nav-links a:hover,.nav-links a.active{background:rgba(0,194,168,0.15);color:var(--teal);}
+  .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;}
+  .hamburger span{display:block;width:22px;height:2px;background:#fff;border-radius:2px;}
+
+  .search-hero{background:linear-gradient(135deg,var(--ink) 0%,var(--ink2) 100%);padding:48px 24px 64px;text-align:center;color:#fff;}
+  .search-hero h1{font-family:'Syne',sans-serif;font-size:clamp(1.6rem,4vw,2.4rem);font-weight:800;letter-spacing:-0.5px;margin-bottom:10px;}
+  .search-hero p{color:rgba(255,255,255,0.6);font-size:0.95rem;margin-bottom:32px;}
+
+  .search-box-wrap{max-width:560px;margin:0 auto;position:relative;}
+  .search-icon{position:absolute;left:18px;top:50%;transform:translateY(-50%);font-size:1.1rem;color:var(--muted);pointer-events:none;}
+  #searchInput{
+    width:100%;padding:16px 20px 16px 50px;
+    border-radius:999px;border:2px solid transparent;
+    font-family:'DM Sans',sans-serif;font-size:1rem;
+    background:#fff;color:var(--ink);outline:none;
+    box-shadow:0 8px 32px rgba(0,0,0,0.2);
+    transition:border-color 0.2s;
+  }
+  #searchInput:focus{border-color:var(--teal);}
+  .clear-btn{
+    position:absolute;right:16px;top:50%;transform:translateY(-50%);
+    background:var(--border);border:none;border-radius:50%;
+    width:28px;height:28px;cursor:pointer;font-size:0.9rem;
+    display:none;align-items:center;justify-content:center;color:var(--muted);
+    transition:0.2s;
+  }
+  .clear-btn:hover{background:var(--teal);color:#fff;}
+  .clear-btn.show{display:flex;}
+
+  .container{max-width:900px;margin:0 auto;padding:0 24px;}
+
+  /* QUICK TOPICS */
+  .quick-topics{padding:24px 0 8px;}
+  .quick-label{font-size:0.75rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+  .topic-tags{display:flex;flex-wrap:wrap;gap:8px;}
+  .topic-tag{
+    padding:7px 16px;border-radius:999px;background:var(--card);
+    border:1px solid var(--border);font-size:0.82rem;font-weight:500;
+    color:var(--text);cursor:pointer;transition:all 0.2s;
+  }
+  .topic-tag:hover{border-color:var(--teal);color:var(--teal);background:rgba(0,194,168,0.06);}
+
+  /* RESULTS */
+  #resultsArea{padding:24px 0 64px;}
+  .results-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:8px;}
+  .results-count{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;color:var(--ink);}
+  .results-sub{font-size:0.82rem;color:var(--muted);}
+  .empty-state{text-align:center;padding:64px 24px;color:var(--muted);}
+  .empty-icon{font-size:3rem;margin-bottom:16px;}
+  .empty-msg{font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;color:var(--ink);margin-bottom:8px;}
+
+  /* RESULT CARD */
+  .result-card{
+    background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+    padding:20px 24px;margin-bottom:14px;transition:all 0.25s;
+  }
+  .result-card:hover{border-color:var(--teal);box-shadow:0 4px 20px rgba(0,194,168,0.1);}
+  .result-card-header{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+  .result-badge{
+    font-size:0.7rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+    padding:3px 10px;border-radius:999px;flex-shrink:0;
+  }
+  .result-type{font-size:0.72rem;color:var(--muted);font-weight:500;margin-left:auto;}
+  .result-term{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;color:var(--ink);margin-bottom:6px;}
+  .result-def{font-size:0.88rem;line-height:1.65;color:var(--text);}
+  mark{background:rgba(0,194,168,0.25);color:var(--ink);border-radius:3px;padding:0 2px;}
+
+  /* CHAPTER RESULTS */
+  .chapter-result{
+    background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+    margin-bottom:14px;overflow:hidden;
+  }
+  .chapter-result-header{
+    padding:16px 24px;display:flex;align-items:center;gap:12px;
+    border-bottom:1px solid var(--border);background:var(--surface);
+  }
+  .chapter-result-body{padding:16px 24px;}
+  .chapter-result-body p{font-size:0.88rem;line-height:1.7;color:var(--text);}
+
+  @media(max-width:640px){
+    .hamburger{display:flex;}
+    .nav-links{display:none;position:fixed;top:64px;left:0;right:0;background:var(--ink2);flex-direction:column;padding:16px;gap:4px;z-index:99;}
+    .nav-links.open{display:flex;}
+    .nav-links a{padding:12px 16px;font-size:1rem;}
+  }
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-brand">Digital<span>Lit</span></a>
+  <div class="nav-links" id="navLinks">
+    <a href="index.html">Home</a>
+    <a href="study-guide.html">Study Guide</a>
+    <a href="flashcards.html">Flashcards</a>
+    <a href="search.html" class="active">Search</a>
+    <a href="practice-test.html">Practice Test</a>
+  </div>
+  <div class="hamburger" onclick="toggleNav()"><span></span><span></span><span></span></div>
+</nav>
+
+<div class="search-hero">
+  <h1>🔍 Search Terms</h1>
+  <p>Type any term, topic, or concept to find it instantly.</p>
+  <div class="search-box-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="Search e.g. phishing, hardware, e-commerce…" oninput="handleSearch()" autocomplete="off">
+    <button class="clear-btn" id="clearBtn" onclick="clearSearch()">✕</button>
+  </div>
+</div>
+
+<div class="container">
+  <div class="quick-topics">
+    <div class="quick-label">Quick Topics</div>
+    <div class="topic-tags" id="topicTags"></div>
+  </div>
+  <div id="resultsArea">
+    <div class="empty-state">
+      <div class="empty-icon">💡</div>
+      <div class="empty-msg">Start typing to search</div>
+      <div>Search across all glossary terms, definitions, and chapter content</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const chColors = {1:'#00c2a8',2:'#00c2a8',3:'#00c2a8',4:'#00c2a8',5:'#7b6fff',6:'#f5a623',7:'#f5a623',8:'#f5a623',9:'#7b6fff',10:'#ff6b6b',11:'#ff6b6b',12:'#ff6b6b',13:'#34d399',14:'#34d399',15:'#f472b6'};
+
+const GLOSSARY = [
+  {term:"Application",def:"Software designed to perform specific tasks",ch:4,chName:"Ch 4: Apps & Cloud"},
+  {term:"Asynchronous",def:"Communication that does not happen in real time — e.g. email, discussion boards",ch:9,chName:"Ch 9: Communication & Collaboration"},
+  {term:"Augmented Reality (AR)",def:"Technology that overlays digital elements onto the real-world environment",ch:13,chName:"Ch 13: VR & Emerging Tech"},
+  {term:"Artificial Intelligence (AI)",def:"Technology that enables machines to simulate human intelligence and decision-making",ch:13,chName:"Ch 13: VR & Emerging Tech"},
+  {term:"Binary Code",def:"The system of 0s and 1s that digital devices use to process information",ch:2,chName:"Ch 2: Digital Technology"},
+  {term:"B2C (Business to Consumer)",def:"Businesses selling directly to customers online",ch:12,chName:"Ch 12: E-Commerce"},
+  {term:"B2B (Business to Business)",def:"Businesses selling to other businesses online",ch:12,chName:"Ch 12: E-Commerce"},
+  {term:"C2C (Consumer to Consumer)",def:"Customers selling to other customers online",ch:12,chName:"Ch 12: E-Commerce"},
+  {term:"Cloud",def:"Online storage and services accessed through the internet",ch:4,chName:"Ch 4: Apps & Cloud"},
+  {term:"Cloud Storage",def:"Storing files online so they can be accessed from any device. Examples: Google Drive, OneDrive, Dropbox",ch:4,chName:"Ch 4: Apps & Cloud"},
+  {term:"Collaboration",def:"Working together to complete a task — e.g. using Google Docs as a team",ch:9,chName:"Ch 9: Communication & Collaboration"},
+  {term:"Communication",def:"The exchange of information between people using digital tools",ch:9,chName:"Ch 9: Communication & Collaboration"},
+  {term:"Copyright",def:"Legal protection for original work — covers music, books, movies, software, and photographs",ch:7,chName:"Ch 7: Copyright & IP"},
+  {term:"CPU",def:"Central Processing Unit — the hardware component that processes data",ch:3,chName:"Ch 3: Hardware & Software"},
+  {term:"Cyberbullying",def:"Bullying that takes place online using digital technology — e.g. hurtful messages, spreading rumours",ch:8,chName:"Ch 8: Cyber Safety"},
+  {term:"Cybercrime",def:"Crimes committed using digital technology — includes hacking, fraud, phishing, and identity theft",ch:8,chName:"Ch 8: Cyber Safety"},
+  {term:"Digital Citizenship",def:"Responsible, safe, and ethical behaviour when using digital technologies",ch:6,chName:"Ch 6: Digital Citizenship"},
+  {term:"Digital Footprint",def:"The trail of information left online through posting, commenting, browsing, and sharing content",ch:6,chName:"Ch 6: Digital Citizenship"},
+  {term:"Digital Literacy",def:"The ability to use digital technologies effectively, responsibly, and safely",ch:1,chName:"Ch 1: Digital Literacy"},
+  {term:"Digital Media",def:"Content created and shared digitally such as videos, images, podcasts, and websites",ch:1,chName:"Ch 1: Digital Literacy"},
+  {term:"Digital Technology",def:"Electronic devices and systems that process information using binary code",ch:2,chName:"Ch 2: Digital Technology"},
+  {term:"E-Commerce",def:"Buying and selling goods and services online using digital platforms — e.g. Amazon, eBay",ch:12,chName:"Ch 12: E-Commerce"},
+  {term:"Email",def:"An asynchronous, formal digital communication tool used to send messages",ch:9,chName:"Ch 9: Communication & Collaboration"},
+  {term:"Eye Strain",def:"Eye discomfort caused by prolonged screen use — symptoms include headaches and blurred vision",ch:14,chName:"Ch 14: Health & Wellness"},
+  {term:"Hardware",def:"The physical components of a computer or digital device that can be seen and touched",ch:3,chName:"Ch 3: Hardware & Software"},
+  {term:"Hyperlink",def:"A clickable link on a web page that takes users to another page or website",ch:10,chName:"Ch 10: Websites & Web Design"},
+  {term:"Identity Theft",def:"When someone steals another person's personal information for fraudulent use",ch:8,chName:"Ch 8: Cyber Safety"},
+  {term:"Input Device",def:"A device used to enter data into a computer — e.g. keyboard, mouse, scanner",ch:3,chName:"Ch 3: Hardware & Software"},
+  {term:"Intellectual Property Rights",def:"Legal protection for creations of the mind such as music, books, inventions, and artwork",ch:7,chName:"Ch 7: Copyright & IP"},
+  {term:"Live Chat",def:"A synchronous, informal communication tool allowing real-time text messaging",ch:9,chName:"Ch 9: Communication & Collaboration"},
+  {term:"Multimedia Production",def:"Creating digital content using different forms of media: text, images, audio, video, and animation",ch:5,chName:"Ch 5: Web 2.0 & Multimedia"},
+  {term:"Netiquette",def:"Proper online behaviour — e.g. using respectful language, not typing in ALL CAPS",ch:6,chName:"Ch 6: Digital Citizenship"},
+  {term:"Output Device",def:"A device used to display or present information — e.g. monitor, printer, speakers",ch:3,chName:"Ch 3: Hardware & Software"},
+  {term:"Phishing",def:"A scam where criminals trick people into revealing personal information such as passwords or banking details",ch:8,chName:"Ch 8: Cyber Safety"},
+  {term:"Piracy",def:"The illegal copying or distribution of copyrighted material",ch:7,chName:"Ch 7: Copyright & IP"},
+  {term:"Plagiarism",def:"Using another person's work without giving credit or proper attribution",ch:7,chName:"Ch 7: Copyright & IP"},
+  {term:"Productivity Tools",def:"Software used to complete work efficiently — e.g. word processors, spreadsheets, presentation software",ch:4,chName:"Ch 4: Apps & Cloud"},
+  {term:"Screen Time",def:"The amount of time spent looking at digital screens — excessive screen time can harm health",ch:14,chName:"Ch 14: Health & Wellness"},
+  {term:"Software",def:"Programs and instructions that tell hardware what to do",ch:3,chName:"Ch 3: Hardware & Software"},
+  {term:"Storage Device",def:"A device used to store information — e.g. hard drive, flash drive, memory card",ch:3,chName:"Ch 3: Hardware & Software"},
+  {term:"Synchronous",def:"Communication happening in real time — e.g. video calls, live chat",ch:9,chName:"Ch 9: Communication & Collaboration"},
+  {term:"System Software",def:"Software that manages the computer's operations — e.g. Windows, macOS, Android, iOS",ch:3,chName:"Ch 3: Hardware & Software"},
+  {term:"Application Software",def:"Software that helps users complete specific tasks — e.g. Microsoft Word, Zoom, Canva",ch:3,chName:"Ch 3: Hardware & Software"},
+  {term:"Telemedicine",def:"Healthcare services delivered via digital technology such as online doctor appointments",ch:11,chName:"Ch 11: Digital Tools in Society"},
+  {term:"The 20-20-20 Rule",def:"Every 20 minutes, look at something 20 feet away for 20 seconds to reduce eye strain",ch:14,chName:"Ch 14: Health & Wellness"},
+  {term:"Virtual Reality (VR)",def:"Technology that creates a simulated digital environment users can interact with using headsets",ch:13,chName:"Ch 13: VR & Emerging Tech"},
+  {term:"Web 2.0",def:"Interactive websites and platforms where users can create and share content — e.g. YouTube, TikTok, Wikipedia",ch:5,chName:"Ch 5: Web 2.0 & Multimedia"},
+  {term:"Website",def:"A collection of related web pages available online — used for education, business, entertainment, and more",ch:10,chName:"Ch 10: Websites & Web Design"},
+  {term:"Wireless Device",def:"A device that connects to a network without physical cables — e.g. smartphone, tablet",ch:2,chName:"Ch 2: Digital Technology"},
+  {term:"Active Digital Footprint",def:"Information intentionally shared online — e.g. social media posts, comments, uploaded videos",ch:6,chName:"Ch 6: Digital Citizenship"},
+  {term:"Passive Digital Footprint",def:"Information collected without direct user input — e.g. cookies, browsing history, location data",ch:6,chName:"Ch 6: Digital Citizenship"},
+  {term:"Google Docs",def:"A collaborative cloud-based word processor that allows multiple users to edit simultaneously",ch:9,chName:"Ch 9: Communication & Collaboration"},
+  {term:"Two-Factor Authentication",def:"A security method requiring two forms of verification before granting access to an account",ch:8,chName:"Ch 8: Cyber Safety"},
+  {term:"Canva",def:"A graphic design tool used for multimedia production",ch:5,chName:"Ch 5: Web 2.0 & Multimedia"},
+  {term:"Robotics",def:"Technology that designs and builds machines (robots) that can perform tasks automatically",ch:13,chName:"Ch 13: VR & Emerging Tech"},
+  {term:"Technology Addiction",def:"Overuse of digital devices to the point where it negatively impacts daily life and wellbeing",ch:14,chName:"Ch 14: Health & Wellness"},
+  {term:"PayPal",def:"An online payment platform used for digital transactions and e-commerce",ch:12,chName:"Ch 12: E-Commerce"},
+  {term:"Navigation Menu",def:"A website feature providing links that help users move between different sections or pages",ch:10,chName:"Ch 10: Websites & Web Design"},
+  {term:"Accessibility",def:"Ensuring that websites and digital tools can be used by all people, including those with disabilities",ch:10,chName:"Ch 10: Websites & Web Design"},
+];
+
+const QUICK_TOPICS = ["phishing","hardware","software","copyright","e-commerce","web 2.0","netiquette","digital footprint","virtual reality","cyberbullying","cloud","productivity","synchronous","plagiarism","identity theft"];
+
+const chapterContent = [
+  {ch:1,chName:"Ch 1: Digital Literacy",title:"Introduction to Digital Literacy",summary:"Digital literacy is the ability to use digital technologies effectively, responsibly, and safely. A digitally literate person can locate information, communicate using digital tools, create digital content, and evaluate information critically. It is essential for education, employment, and everyday life."},
+  {ch:2,chName:"Ch 2: Digital Technology",title:"Understanding Digital Technology",summary:"Digital technology includes electronic devices that process information using binary code. Types of digital media include videos, images, podcasts, music, and websites. Wireless devices connect without cables and offer portability but may have security risks."},
+  {ch:3,chName:"Ch 3: Hardware & Software",title:"Hardware and Software",summary:"Hardware is the physical components of a computer. Input devices enter data (keyboard, mouse), output devices display results (monitor, printer), and storage devices save information (hard drive, flash drive). Software includes system software (Windows, macOS) and application software (Word, Zoom)."},
+  {ch:4,chName:"Ch 4: Apps & Cloud",title:"Applications and Productivity Tools",summary:"Apps are software programs for specific tasks. Productivity tools include word processors, spreadsheets, and presentation software. Cloud computing provides online storage and services accessible from any device. Examples: Google Drive, OneDrive, Dropbox."},
+  {ch:5,chName:"Ch 5: Web 2.0 & Multimedia",title:"Web 2.0 and Multimedia Production",summary:"Web 2.0 refers to interactive platforms where users create and share content, such as YouTube, TikTok, and Wikipedia. Multimedia production uses text, images, audio, video, and animation. Tools include Canva, CapCut, and Audacity."},
+  {ch:6,chName:"Ch 6: Digital Citizenship",title:"Digital Citizenship and Online Responsibility",summary:"Digital citizenship means behaving responsibly and ethically online. A digital footprint is the trail of information left online. Active footprints are intentionally shared; passive footprints are collected automatically. Netiquette includes using respectful language and avoiding typing in ALL CAPS."},
+  {ch:7,chName:"Ch 7: Copyright & IP",title:"Intellectual Property and Copyright",summary:"Intellectual property rights protect creative works. Copyright gives creators legal protection. Plagiarism means using someone's work without credit. Piracy is the illegal copying of copyrighted material. Always cite sources and paraphrase correctly."},
+  {ch:8,chName:"Ch 8: Cyber Safety",title:"Cyber Safety and Online Threats",summary:"Cyberbullying involves online harassment causing anxiety, depression, and isolation. Phishing tricks users into revealing passwords or banking details through fake emails or websites. Identity theft occurs when personal information is stolen. Stay safe with strong passwords, two-factor authentication, and avoiding suspicious links."},
+  {ch:9,chName:"Ch 9: Communication & Collaboration",title:"Communication and Collaboration Online",summary:"Communication shares information; collaboration involves working together. Synchronous communication happens in real time (video calls, live chat). Asynchronous communication is not real time (email, discussion boards). Collaboration tools include Google Docs, Microsoft Teams, and Trello."},
+  {ch:10,chName:"Ch 10: Websites & Web Design",title:"Websites and Web Design",summary:"Websites are collections of web pages used for education, business, and communication. Good design principles include clear navigation, readable fonts, accessibility, and fast loading. Key factors when building websites: audience, purpose, design, accessibility, and content."},
+  {ch:11,chName:"Ch 11: Digital Tools in Society",title:"Digital Tools in Society",summary:"Digital tools impact education (online learning), healthcare (telemedicine), business (marketing, sales), agriculture (smart irrigation), and entertainment (streaming). Advantages include faster communication and global connectivity. Disadvantages include job displacement, privacy concerns, and technology addiction."},
+  {ch:12,chName:"Ch 12: E-Commerce",title:"E-Commerce and the Digital Economy",summary:"E-commerce is buying and selling online. Types: B2C (business to consumer), B2B (business to business), C2C (consumer to consumer). Online payment methods: credit cards, PayPal, mobile wallets. Safe shopping tips: use trusted sites, check for secure symbols, avoid public Wi-Fi."},
+  {ch:13,chName:"Ch 13: VR & Emerging Tech",title:"Virtual Reality and Emerging Technologies",summary:"Virtual reality (VR) creates simulated digital environments used in gaming, education, healthcare, and tourism. Advantages: interactive learning and realistic simulations. Disadvantages: expensive and can cause motion sickness. Other emerging technologies include AR, AI, and robotics."},
+  {ch:14,chName:"Ch 14: Health & Wellness",title:"Health and Wellness in the Digital Age",summary:"Excessive screen time causes eye strain, poor posture, sleep problems, and mental health concerns. The 20-20-20 rule helps reduce eye strain. Healthy digital habits include taking breaks, exercising, and limiting screen time before bed. Social media may contribute to anxiety and low self-esteem."},
+];
+
+function highlight(text, query) {
+  if (!query) return text;
+  const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return text.replace(new RegExp(`(${escaped})`, 'gi'), '<mark>$1</mark>');
+}
+
+function handleSearch() {
+  const q = document.getElementById('searchInput').value.trim();
+  document.getElementById('clearBtn').classList.toggle('show', q.length > 0);
+  if (!q) {
+    document.getElementById('resultsArea').innerHTML = '<div class="empty-state"><div class="empty-icon">💡</div><div class="empty-msg">Start typing to search</div><div>Search across all glossary terms, definitions, and chapter content</div></div>';
+    return;
+  }
+  const ql = q.toLowerCase();
+
+  const termResults = GLOSSARY.filter(g =>
+    g.term.toLowerCase().includes(ql) || g.def.toLowerCase().includes(ql)
+  );
+  const chapterResults = chapterContent.filter(c =>
+    c.title.toLowerCase().includes(ql) || c.summary.toLowerCase().includes(ql)
+  ).filter(c => !termResults.some(t => t.ch === c.ch)); // avoid dup chapters already covered
+
+  const total = termResults.length + chapterResults.length;
+  let html = '';
+
+  if (total === 0) {
+    html = `<div class="empty-state"><div class="empty-icon">😕</div><div class="empty-msg">No results found</div><div>Try a different keyword — e.g. "hardware", "phishing", "email"</div></div>`;
+  } else {
+    html += `<div class="results-header"><div><div class="results-count">${total} result${total!==1?'s':''} for "${q}"</div><div class="results-sub">Terms and chapter content</div></div></div>`;
+
+    if (termResults.length > 0) {
+      html += `<div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.78rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;">📖 Glossary Terms</div>`;
+      termResults.forEach(g => {
+        const color = chColors[g.ch] || 'var(--teal)';
+        html += `
+          <div class="result-card">
+            <div class="result-card-header">
+              <span class="result-badge" style="background:${color}22;color:${color};">${g.chName}</span>
+              <span class="result-type">Definition</span>
+            </div>
+            <div class="result-term">${highlight(g.term, q)}</div>
+            <div class="result-def">${highlight(g.def, q)}</div>
+          </div>`;
+      });
+    }
+
+    if (chapterResults.length > 0) {
+      html += `<div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.78rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin:24px 0 12px;">📚 Chapter Content</div>`;
+      chapterResults.forEach(c => {
+        const color = chColors[c.ch] || 'var(--teal)';
+        html += `
+          <div class="chapter-result">
+            <div class="chapter-result-header">
+              <span class="result-badge" style="background:${color}22;color:${color};">${c.chName}</span>
+              <strong style="font-size:0.9rem;">${highlight(c.title, q)}</strong>
+            </div>
+            <div class="chapter-result-body"><p>${highlight(c.summary, q)}</p>
+              <a href="study-guide.html#ch${c.ch}" style="display:inline-block;margin-top:12px;font-size:0.82rem;color:var(--teal);font-weight:600;text-decoration:none;">View full chapter →</a>
+            </div>
+          </div>`;
+      });
+    }
+  }
+
+  document.getElementById('resultsArea').innerHTML = html;
+}
+
+function clearSearch() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('clearBtn').classList.remove('show');
+  document.getElementById('resultsArea').innerHTML = '<div class="empty-state"><div class="empty-icon">💡</div><div class="empty-msg">Start typing to search</div><div>Search across all glossary terms, definitions, and chapter content</div></div>';
+}
+
+function quickSearch(term) {
+  document.getElementById('searchInput').value = term;
+  document.getElementById('clearBtn').classList.add('show');
+  handleSearch();
+  window.scrollTo({top:250,behavior:'smooth'});
+}
+
+// Render quick topics
+document.getElementById('topicTags').innerHTML = QUICK_TOPICS.map(t =>
+  `<button class="topic-tag" onclick="quickSearch('${t}')">${t}</button>`
+).join('');
+
+// Keyboard shortcut
+document.getElementById('searchInput').addEventListener('keydown', e => {
+  if (e.key === 'Escape') clearSearch();
+});
+
+function toggleNav() { document.getElementById('navLinks').classList.toggle('open'); }
+</script>
+</body>
+</html>
